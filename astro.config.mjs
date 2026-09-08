@@ -6,7 +6,6 @@ import { fileURLToPath } from 'node:url';
 import chirp from '@chirp.md/chirp';
 
 export default defineConfig({
-  output: 'middleware',
   trailingSlash: 'never',
   devToolbar: { enabled: false },
   build: {
