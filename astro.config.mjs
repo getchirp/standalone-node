@@ -18,29 +18,31 @@ export default defineConfig({
     },
     plugins: [
       {
-        name: 'debug-save-origin',
+        name: 'codespaces-save-origin',
+        apply: 'serve',
         configureServer(server) {
+          const publicHost =
+            'orange-space-succotash-vpgqjpr754xqcxj5g-4321.app.github.dev';
+      
           server.middlewares.use((req, res, next) => {
-            if (req.method === 'POST') {
-              const names = [
-                'host',
-                'origin',
-                'x-forwarded-host',
-                'x-forwarded-proto',
-                'x-forwarded-port',
-                'sec-fetch-site',
-              ];
-              console.log(
-                '[save origin]',
-                Object.fromEntries(
-                  names.map(name => [name, req.headers[name]]),
-                ),
-              );
+            const headers = req.headers;
+      
+            if (
+              process.env.CHIRP_ALLOW_REMOTE === '1' &&
+              headers.host === 'localhost:4321' &&
+              headers.origin === 'https://localhost:4321' &&
+              headers['x-forwarded-host'] === publicHost &&
+              headers['x-forwarded-proto'] === 'https' &&
+              headers['x-forwarded-port'] === '443' &&
+              headers['sec-fetch-site'] === 'same-origin'
+            ) {
+              headers.origin = `https://${publicHost}`;
             }
+      
             next();
           });
         },
-      },
+      }
     ],
   },
   experimental: {
