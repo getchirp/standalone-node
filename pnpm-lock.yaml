@@ -255,7 +255,7 @@ packages:
     engines: {node: '>=18'}
 
   '@chirp.md/chirp@file:vendor/chirp.md-chirp-1.0.0.tgz':
-    resolution: {integrity: sha512-JYJbi+gDBLZWd6ZPUpitVb/wL7Rl2ZBiBjLOfg8L5PUkIFT3sR7781aH5sQPFBOuChtEYoSzzFjRMbN2VQ2OwQ==, tarball: file:vendor/chirp.md-chirp-1.0.0.tgz}
+    resolution: {integrity: sha512-aFqpwtY4w1kFV/KJU2I8/z9nHjRkRQWR/pEvU4OSw4NHYuKDylfxhF933NvShl8O2BpH6h79qFGqQLiX34GSqQ==, tarball: file:vendor/chirp.md-chirp-1.0.0.tgz}
     version: 1.0.0
     engines: {node: '>=22'}
     peerDependencies:
