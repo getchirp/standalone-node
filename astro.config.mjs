@@ -12,7 +12,37 @@ export default defineConfig({
     assets: '_assets',
     format: 'file',
   },
-  vite: { build: { cssMinify: 'lightningcss' } },
+  vite: {
+    build: {
+      cssMinify: 'lightningcss',
+    },
+    plugins: [
+      {
+        name: 'debug-save-origin',
+        configureServer(server) {
+          server.middlewares.use((req, res, next) => {
+            if (req.method === 'POST') {
+              const names = [
+                'host',
+                'origin',
+                'x-forwarded-host',
+                'x-forwarded-proto',
+                'x-forwarded-port',
+                'sec-fetch-site',
+              ];
+              console.log(
+                '[save origin]',
+                Object.fromEntries(
+                  names.map(name => [name, req.headers[name]]),
+                ),
+              );
+            }
+            next();
+          });
+        },
+      },
+    ],
+  },
   experimental: {
     incrementalBuild: true,
   },
