@@ -1,0 +1,29 @@
+releases:
+  name: Releases
+  slug: releases
+  description: "What shipped: version notes, new capabilities, and the details
+    behind each release."
+  color: "hsl(85 85% 35%)"
+engineering:
+  name: Engineering
+  slug: engineering
+  description: "How Chirp is built: architecture decisions, performance work, and
+    the trade-offs behind a zero-runtime editor."
+  color: "hsl(8 80% 48%)"
+philosophy:
+  name: Philosophy
+  slug: philosophy
+  description: "The principles behind the platform: how I think about software,
+    content, and the people who publish."
+  color: "hsl(262 71% 50%)"
+product:
+  name: Product
+  slug: product
+  description: "What Chirp does and why: product decisions, feature thinking, and
+    how we decide what to build."
+  color: "hsl(199 90% 42%)"
+thinking-out-loud:
+  id: thinking-out-loud
+  name: Thinking Out Loud
+  description: The ponderings of a solo builder
+  color: hsl(210 12% 55%)

@@ -1,0 +1,2289 @@
+---
+import { serializeJsonForHtml } from '../../utils/serialize-json';
+
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+
+const demoContent = {
+  collections: {
+    posts: {
+      title: "Posts",
+      path: "src/content/posts",
+      total: 12,
+      entries: [
+        {
+          id: "script-to-platform",
+          title: "From script to platform",
+          slug: "script-to-platform",
+          status: "published",
+          updated: "Today",
+          frontmatter: {
+            title: "From script to platform",
+            slug: "script-to-platform",
+            description: "How Chirp grows with your Astro project.",
+            status: "published",
+            image: "sidecar-editor.webp",
+            published_at: "2026-08-04",
+            category: "Building Chirp",
+          },
+          markdown: `# From script to platform
+
+Chirp begins as one command inside your Astro project, then progressively reveals the editing surface already described by your schema.
+
+## A sidecar, not a replacement
+
+The editor runs beside your site during development. It reads the same content configuration, edits the same markdown and mdx files, and leaves the production site untouched.
+
+- No second content model
+- No remote database
+- No framework runtime added to the site`,
+        },
+        {
+          id: "schema-source",
+          title: "Your schema stays the source",
+          slug: "schema-as-source",
+          status: "draft",
+          updated: "2d ago",
+          frontmatter: {
+            title: "Your schema stays the source",
+            slug: "schema-as-source",
+            description: "One schema for Astro, Chirp, and every editing surface.",
+            status: "draft",
+            image: "schema-source.webp",
+            published_at: "2026-08-02",
+            category: "Architecture",
+          },
+          markdown: `# Your schema stays the source
+
+Chirp reads the collection definitions your project already trusts. Fields, validation, labels, and editing controls all begin in the same place.
+
+## No duplicate configuration
+
+Change the schema and the editor adapts with it. The content model does not drift away from the site it belongs to.
+
+- Zod defines the structure
+- Astro validates the content
+- Chirp generates the editing controls`,
+        },
+        {
+          id: "offline-editing",
+          title: "Editing without crossing the wire",
+          slug: "offline-editing",
+          status: "published",
+          updated: "5d ago",
+          frontmatter: {
+            title: "Editing without crossing the wire",
+            slug: "offline-editing",
+            description: "A local editing loop with no hosted service in the middle.",
+            status: "published",
+            image: "offline-editing.webp",
+            published_at: "2026-07-30",
+            category: "Local first",
+          },
+          markdown: `# Editing without crossing the wire
+
+The sidecar runs on your machine, beside the Astro development server. Your drafts, media, and project structure stay local.
+
+## The shortest possible path
+
+An edit moves from the visual canvas to the markdown file in your repository. There is no remote round trip and no production dependency.
+
+- Works with your existing Git workflow
+- Keeps unpublished work private
+- Remains useful without a connection`,
+        },
+        {
+          id: "better-mdx",
+          title: "A better way to work with mdx",
+          slug: "better-mdx",
+          status: "published",
+          updated: "1w ago",
+          frontmatter: {
+            title: "A better way to work with mdx",
+            slug: "better-mdx",
+            description: "Visual components without hiding the source beneath them.",
+            status: "published",
+            image: "better-mdx.webp",
+            published_at: "2026-07-27",
+            category: "Editing",
+          },
+          markdown: `# A better way to work with mdx
+
+mdx components appear in the slash menu as purposeful editing surfaces, while the document remains portable source code.
+
+## Visual where it helps
+
+Writers see a useful placeholder and the component properties they can change. Developers keep real Astro components and readable mdx.
+
+- Components are discovered from your configured folder
+- Props are exposed in a focused popover
+- Imports are handled automatically`,
+        },
+      ],
+    },
+    plants: {
+      title: "Plants",
+      path: "src/content/plants",
+      total: 24,
+      entries: [
+        {
+          id: "acai",
+          title: "Acai",
+          slug: "acai",
+          status: "published",
+          updated: "Today",
+          frontmatter: {
+            common_name: "Acai",
+            scientific_name: "Euterpe oleracea",
+            slug: "acai",
+            image: "acai.webp",
+            vegetable: false,
+            family: "Arecaceae",
+            position: "Filtered sun",
+          },
+          markdown: `# Acai
+
+A slender palm from the Amazon floodplains, best known for its small purple fruit and graceful clustering habit.
+
+## Growing notes
+
+Acai prefers warmth, humidity, and consistently moist soil. Protect young plants from drying winds and strong midday sun.
+
+- Keep evenly watered
+- Feed with rich organic matter
+- Allow room for multiple stems`,
+        },
+        {
+          id: "banana",
+          title: "Banana",
+          slug: "banana",
+          status: "published",
+          updated: "Yesterday",
+          frontmatter: {
+            common_name: "Banana",
+            scientific_name: "Musa",
+            slug: "banana",
+            image: "banana.webp",
+            vegetable: false,
+            family: "Musaceae",
+            position: "Full sun",
+          },
+          markdown: `# Banana
+
+Bananas are fast-growing perennial herbs that reward generous feeding, reliable moisture, and protection from wind.
+
+## Growing notes
+
+Maintain one fruiting stem, one follower, and one young sucker in each mat. Mulch heavily and return chopped leaves to the soil.
+
+- Plant in rich, draining soil
+- Water deeply in dry weather
+- Remove damaged leaves cleanly`,
+        },
+        {
+          id: "cape-gooseberry",
+          title: "Cape gooseberry",
+          slug: "cape-gooseberry",
+          status: "draft",
+          updated: "3d ago",
+          frontmatter: {
+            common_name: "Cape gooseberry",
+            scientific_name: "Physalis peruviana",
+            slug: "cape-gooseberry",
+            image: "cape-gooseberry.webp",
+            vegetable: false,
+            family: "Solanaceae",
+            position: "Full sun",
+          },
+          markdown: `# Cape gooseberry
+
+A sprawling perennial with lantern-like husks around sweet, tart golden fruit.
+
+## Growing notes
+
+Give the plant space, light support, and a warm position. Fruit is ready when the husk becomes papery and drops naturally.
+
+- Sow after the last cold spell
+- Avoid excessive nitrogen
+- Harvest fallen fruit frequently`,
+        },
+        {
+          id: "granadilla",
+          title: "Granadilla",
+          slug: "granadilla",
+          status: "published",
+          updated: "6d ago",
+          frontmatter: {
+            common_name: "Granadilla",
+            scientific_name: "Passiflora edulis",
+            slug: "granadilla",
+            image: "granadilla.webp",
+            vegetable: false,
+            family: "Passifloraceae",
+            position: "Sun with cool roots",
+          },
+          markdown: `# Granadilla
+
+A vigorous evergreen climber producing fragrant flowers and aromatic purple fruit.
+
+## Growing notes
+
+Train the main stem to a strong horizontal support, then allow fruiting laterals to hang down where they remain easy to prune.
+
+- Shelter from strong wind
+- Mulch the root zone
+- Prune after the main crop`,
+        },
+      ],
+    },
+    recipes: {
+      title: "Recipes",
+      path: "src/content/recipes",
+      total: 8,
+      entries: [
+        {
+          id: "charred-brassicas",
+          title: "Charred brassicas",
+          slug: "charred-brassicas",
+          status: "published",
+          updated: "Today",
+          frontmatter: {
+            title: "Charred brassicas",
+            slug: "charred-brassicas",
+            description: "Wood-fired greens with a bright preserved-lemon dressing.",
+            status: "published",
+            image: "charred-brassicas.webp",
+            serves: 6,
+            category: "Shared plates",
+          },
+          markdown: `# Charred brassicas
+
+Deeply charred seasonal brassicas finished with preserved lemon, toasted seeds, and fresh herbs.
+
+## Method
+
+Cook the vegetables over a fierce fire until the edges blister while the centres remain tender.
+
+- Dress while still warm
+- Add herbs at the last moment
+- Serve on one generous platter`,
+        },
+        {
+          id: "preserved-lemon-dressing",
+          title: "Preserved lemon dressing",
+          slug: "preserved-lemon-dressing",
+          status: "published",
+          updated: "4d ago",
+          frontmatter: {
+            title: "Preserved lemon dressing",
+            slug: "preserved-lemon-dressing",
+            description: "A salty, bright dressing for vegetables and grains.",
+            status: "published",
+            image: "preserved-lemon.webp",
+            serves: 8,
+            category: "Condiments",
+          },
+          markdown: `# Preserved lemon dressing
+
+A sharp, savoury dressing that cuts through smoke, olive oil, and rich roasted vegetables.
+
+## Method
+
+Rinse the preserved lemon, remove the seeds, and blend the peel with garlic, vinegar, and olive oil.
+
+- Taste before adding salt
+- Loosen with warm water as needed
+- Keep refrigerated for one week`,
+        },
+        {
+          id: "tomatillo-salsa",
+          title: "Tomatillo salsa",
+          slug: "tomatillo-salsa",
+          status: "draft",
+          updated: "1w ago",
+          frontmatter: {
+            title: "Tomatillo salsa",
+            slug: "tomatillo-salsa",
+            description: "A fresh green salsa with fire-roasted tomatillos.",
+            status: "draft",
+            image: "tomatillo-salsa.webp",
+            serves: 4,
+            category: "Condiments",
+          },
+          markdown: `# Tomatillo salsa
+
+Bright, tart tomatillos take on a deeper flavour after a brief char over flame.
+
+## Method
+
+Blacken the tomatillos and chilli, then pulse with onion, coriander, lime, and salt.
+
+- Keep some texture
+- Adjust chilli to taste
+- Serve the same day`,
+        },
+        {
+          id: "wood-fired-flatbread",
+          title: "Wood-fired flatbread",
+          slug: "wood-fired-flatbread",
+          status: "published",
+          updated: "2w ago",
+          frontmatter: {
+            title: "Wood-fired flatbread",
+            slug: "wood-fired-flatbread",
+            description: "Soft, blistered flatbread for sharing at the table.",
+            status: "published",
+            image: "wood-fired-flatbread.webp",
+            serves: 8,
+            category: "Bread",
+          },
+          markdown: `# Wood-fired flatbread
+
+A forgiving dough that cooks quickly against the heat of a wood-fired oven or cast-iron plate.
+
+## Method
+
+Stretch each piece by hand, cook until bubbles rise, then turn once and brush with olive oil.
+
+- Rest the dough before shaping
+- Keep the work surface lightly floured
+- Serve immediately`,
+        },
+      ],
+    },
+  },
+};
+
+const serialisedDemoContent = serializeJsonForHtml(demoContent);
+---
+
+<section
+  class:list={["chirp-sidecar-demo", className]}
+  data-chirp-sidecar
+  data-mode="terminal"
+  data-browser-screen="entries"
+  data-running="false"
+  data-complete="false"
+  style="visibility: hidden;"
+>
+  <style is:inline media="not all" data-csd-style>
+    [data-chirp-sidecar],
+    [data-chirp-sidecar] * {
+      box-sizing: border-box;
+    }
+
+    [data-chirp-sidecar] {
+      display: block !important;
+      width: 100% !important;
+      max-width: none !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      border: 0 !important;
+      background: transparent !important;
+      color: var(--ink, #221e17);
+      font-family: var(--mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
+    }
+
+    [data-chirp-sidecar] button,
+    [data-chirp-sidecar] input,
+    [data-chirp-sidecar] [contenteditable] {
+      font: inherit;
+    }
+
+    [data-chirp-sidecar] button {
+      appearance: none;
+    }
+
+    [data-chirp-sidecar] .csd-frame {
+      position: relative;
+      width: 100%;
+      height: 650px;
+      overflow: hidden;
+      border: 1px solid var(--dark-line, #453e30);
+      border-radius: var(--radius, 14px);
+      background: var(--dark, #242019);
+      box-shadow: var(--page-shadow, 0 34px 70px -38px #2e261861);
+      isolation: isolate;
+      transition:
+        background 500ms cubic-bezier(.22, 1, .36, 1),
+        border-color 500ms cubic-bezier(.22, 1, .36, 1),
+        box-shadow 500ms cubic-bezier(.22, 1, .36, 1);
+    }
+
+    [data-chirp-sidecar][data-mode="browser"] .csd-frame {
+      border-color: var(--line, #dcd6c3);
+      background: var(--surface, #fbf9f2);
+      box-shadow: var(--page-shadow, 0 34px 70px -38px #2e261861);
+    }
+
+    [data-chirp-sidecar] .csd-toolbar {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      height: 43px;
+      padding: 0 15px;
+      border-bottom: 1px solid var(--dark-line, #453e30);
+      background: color-mix(in srgb, var(--dark, #242019) 94%, black);
+      transition:
+        height 420ms cubic-bezier(.22, 1, .36, 1),
+        padding 420ms cubic-bezier(.22, 1, .36, 1),
+        border-color 420ms ease,
+        background 420ms ease;
+    }
+
+    [data-chirp-sidecar][data-mode="browser"] .csd-toolbar {
+      height: 54px;
+      padding: 0 13px;
+      border-color: var(--line, #dcd6c3);
+      background: var(--paper-deep, #fff);
+    }
+
+    [data-chirp-sidecar] .csd-dots {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex: 0 0 auto;
+    }
+
+    [data-chirp-sidecar] .csd-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #5d5542;
+      transition: background 420ms ease, transform 420ms ease;
+    }
+
+    [data-chirp-sidecar][data-mode="browser"] .csd-dot:nth-child(1) { background: #d66a4b; }
+    [data-chirp-sidecar][data-mode="browser"] .csd-dot:nth-child(2) { background: #d5a94e; }
+    [data-chirp-sidecar][data-mode="browser"] .csd-dot:nth-child(3) { background: #7d9a63; }
+
+    [data-chirp-sidecar] .csd-terminal-title {
+      color: #918977;
+      font: 500 10px/1 var(--mono, ui-monospace, monospace) !important;
+      transition: opacity 180ms ease, transform 260ms ease;
+    }
+
+    [data-chirp-sidecar][data-mode="browser"] .csd-terminal-title {
+      opacity: 0;
+      transform: translateX(-8px);
+      pointer-events: none;
+    }
+
+    [data-chirp-sidecar] .csd-browser-controls {
+      position: absolute;
+      inset: 0 112px 0 63px;
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      align-items: center;
+      gap: 11px;
+      opacity: 0;
+      transform: translateY(7px);
+      pointer-events: none;
+      transition: opacity 240ms ease 80ms, transform 360ms cubic-bezier(.22, 1, .36, 1) 70ms;
+    }
+
+    [data-chirp-sidecar][data-mode="browser"] .csd-browser-controls {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    [data-chirp-sidecar] .csd-nav-buttons {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    [data-chirp-sidecar] .csd-nav-button {
+      display: grid;
+      place-items: center;
+      width: 24px;
+      height: 24px;
+      margin: 0 !important;
+      padding: 0 !important;
+      border: 0 !important;
+      border-radius: 5px !important;
+      background: transparent !important;
+      color: var(--faint, #6b665a) !important;
+      cursor: pointer;
+    }
+
+    [data-chirp-sidecar] .csd-nav-button:hover {
+      background: color-mix(in srgb, var(--ink, #221e17) 7%, transparent) !important;
+      color: var(--ink, #221e17) !important;
+    }
+
+    [data-chirp-sidecar] .csd-address {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      min-width: 0;
+      height: 30px;
+      padding: 0 11px;
+      border: 1px solid var(--line, #dcd6c3);
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--surface, #fbf9f2) 82%, white);
+      color: var(--muted, #59564d);
+      font: 500 10px/1 var(--mono, ui-monospace, monospace) !important;
+      box-shadow: inset 0 1px 0 #ffffffa6;
+    }
+
+    [data-chirp-sidecar] .csd-lock {
+      color: var(--green-text, #47612f);
+      font-size: 9px;
+    }
+
+    [data-chirp-sidecar] .csd-url {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    [data-chirp-sidecar] .csd-replay {
+      position: relative;
+      z-index: 4;
+      display: inline-flex;
+      align-items: center;
+      margin: 0 0 0 auto !important;
+      padding: 4px 0 !important;
+      border: 0 !important;
+      background: transparent !important;
+      color: var(--dark-ok, #a4b88a) !important;
+      font: 500 10px/1 var(--mono, ui-monospace, monospace) !important;
+      text-decoration: underline;
+      text-decoration-color: color-mix(in srgb, currentColor 55%, transparent);
+      text-underline-offset: 3px;
+      cursor: pointer;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(2px);
+      transition: opacity 180ms ease, transform 180ms ease, visibility 0s linear 180ms, color 300ms ease;
+    }
+
+    [data-chirp-sidecar][data-complete="true"] .csd-replay {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+      transition-delay: 90ms, 90ms, 0s, 0s;
+    }
+
+    [data-chirp-sidecar][data-mode="browser"] .csd-replay {
+      color: var(--accent-text, #a93619) !important;
+    }
+
+    [data-chirp-sidecar] .csd-replay:focus-visible,
+    [data-chirp-sidecar] .csd-open-editor:focus-visible,
+    [data-chirp-sidecar] button:focus-visible,
+    [data-chirp-sidecar] [contenteditable]:focus-visible {
+      outline: 2px solid var(--accent, #dd4c22);
+      outline-offset: 3px;
+    }
+
+    [data-chirp-sidecar] .csd-stage {
+      position: absolute;
+      inset: 43px 0 0;
+      transition: inset 420ms cubic-bezier(.22, 1, .36, 1);
+    }
+
+    [data-chirp-sidecar][data-mode="browser"] .csd-stage {
+      inset: 54px 0 0;
+    }
+
+    [data-chirp-sidecar] .csd-terminal-screen,
+    [data-chirp-sidecar] .csd-browser-screen {
+      position: absolute;
+      inset: 0;
+    }
+
+    [data-chirp-sidecar] .csd-terminal-screen {
+      display: flex;
+      flex-direction: column;
+      padding: 29px 32px 26px;
+      color: var(--dark-muted, #a49c87);
+      font: 500 12px/1.56 var(--mono, ui-monospace, monospace) !important;
+      opacity: 1;
+      transform: scale(1);
+      transform-origin: 50% 45%;
+      transition:
+        opacity 260ms ease,
+        transform 520ms cubic-bezier(.22, 1, .36, 1),
+        filter 420ms ease;
+    }
+
+    [data-chirp-sidecar][data-mode="browser"] .csd-terminal-screen {
+      opacity: 0;
+      transform: scale(.965);
+      filter: blur(3px);
+      pointer-events: none;
+    }
+
+    [data-chirp-sidecar] .csd-command-line {
+      display: flex;
+      align-items: baseline;
+      min-height: 20px;
+      color: #e8e1d2;
+    }
+
+    [data-chirp-sidecar] .csd-prompt,
+    [data-chirp-sidecar] .csd-keyword {
+      color: var(--dark-keyword, #e07840);
+    }
+
+    [data-chirp-sidecar] .csd-command {
+      color: #e8e1d2;
+    }
+
+    [data-chirp-sidecar] .csd-cursor {
+      display: inline-block;
+      width: .58em;
+      height: 1.15em;
+      margin-left: 2px;
+      vertical-align: -.16em;
+      background: var(--accent, #dd4c22);
+      animation: csd-cursor 950ms steps(1) infinite;
+    }
+
+    [data-chirp-sidecar][data-running="true"] .csd-cursor,
+    [data-chirp-sidecar][data-terminal-ready="true"] .csd-cursor {
+      display: none;
+    }
+
+    [data-chirp-sidecar] .csd-log {
+      display: grid;
+      gap: 7px;
+      width: min(760px, 100%);
+      margin-top: 22px;
+    }
+
+    [data-chirp-sidecar] .csd-task {
+      display: grid;
+      grid-template-columns: 1.4em minmax(0, 1fr);
+      align-items: baseline;
+      min-height: 19px;
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity 160ms ease, transform 190ms ease;
+    }
+
+    [data-chirp-sidecar] .csd-task.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    [data-chirp-sidecar] .csd-task-icon {
+      color: var(--dark-string, #d9a05f);
+    }
+
+    [data-chirp-sidecar] .csd-task.is-running .csd-task-icon {
+      animation: csd-pulse 760ms ease-in-out infinite alternate;
+    }
+
+    [data-chirp-sidecar] .csd-task.is-complete .csd-task-icon {
+      color: var(--dark-ok, #a4b88a);
+      animation: none;
+    }
+
+    [data-chirp-sidecar] .csd-task-label {
+      color: #b7ae99;
+    }
+
+    [data-chirp-sidecar] .csd-task.is-running .csd-task-label {
+      color: #e4dccd;
+    }
+
+    [data-chirp-sidecar] .csd-ready {
+      display: grid;
+      grid-template-columns: 1.4em minmax(0, 1fr);
+      gap: 0;
+      width: min(760px, 100%);
+      margin-top: 24px;
+      opacity: 0;
+      transform: translateY(7px);
+      transition: opacity 220ms ease, transform 260ms cubic-bezier(.22, 1, .36, 1);
+    }
+
+    [data-chirp-sidecar][data-terminal-ready="true"] .csd-ready {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    [data-chirp-sidecar] .csd-ready-icon {
+      color: var(--dark-ok, #a4b88a);
+    }
+
+    [data-chirp-sidecar] .csd-ready-copy {
+      display: grid;
+      gap: 5px;
+    }
+
+    [data-chirp-sidecar] .csd-ready-title {
+      color: #e9e1d2;
+    }
+
+    [data-chirp-sidecar] .csd-ready-meta {
+      color: #817967;
+      font-size: 10px;
+    }
+
+    [data-chirp-sidecar] .csd-astro-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      width: fit-content;
+      margin-top: 3px;
+      color: var(--dark-ok, #a4b88a);
+      font: 600 10px/1.35 var(--mono, ui-monospace, monospace) !important;
+    }
+
+    [data-chirp-sidecar] .csd-astro-status::before {
+      content: "◆";
+      font-size: 7px;
+      opacity: .9;
+    }
+
+    [data-chirp-sidecar] .csd-open-editor {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      width: fit-content;
+      margin-top: 12px;
+      color: var(--dark-string, #d9a05f);
+      font-weight: 600;
+      text-decoration: underline;
+      text-decoration-color: color-mix(in srgb, currentColor 60%, transparent);
+      text-underline-offset: 4px;
+      cursor: pointer;
+    }
+
+    [data-chirp-sidecar] .csd-open-editor:hover {
+      color: #f0ba78;
+    }
+
+    [data-chirp-sidecar] .csd-browser-screen {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      min-height: 0;
+      color: var(--ink, #221e17);
+      font-family: var(--font-system, Georgia, "Times New Roman", serif);
+      opacity: 0;
+      transform: scale(1.035);
+      transform-origin: 50% 45%;
+      pointer-events: none;
+      transition:
+        opacity 360ms ease 120ms,
+        transform 560ms cubic-bezier(.22, 1, .36, 1) 70ms;
+    }
+
+    [data-chirp-sidecar][data-mode="browser"] .csd-browser-screen {
+      opacity: 1;
+      transform: scale(1);
+      pointer-events: auto;
+    }
+
+    [data-chirp-sidecar] .csd-appbar {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      height: 48px;
+      padding: 0 16px;
+      border-bottom: 1px solid var(--line-soft, #e5e0cf);
+      background: var(--surface, #fbf9f2);
+    }
+
+    [data-chirp-sidecar] .csd-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--ink, #221e17);
+      font: 700 13px/1 var(--font-system, Georgia, serif) !important;
+      letter-spacing: -.02em;
+    }
+
+    [data-chirp-sidecar] .csd-local-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 8px;
+      border: 1px solid var(--green-soft, #e4e9d5);
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--green-soft, #e4e9d5) 58%, transparent);
+      color: var(--green-text, #47612f);
+      font: 600 9px/1 var(--mono, ui-monospace, monospace) !important;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    [data-chirp-sidecar] .csd-local-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--green, #5c7a45);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--green-soft, #e4e9d5) 80%, transparent);
+    }
+
+    [data-chirp-sidecar] .csd-app-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: auto;
+    }
+
+    [data-chirp-sidecar] .csd-search {
+      width: min(220px, 25vw);
+      height: 29px;
+      padding: 0 10px;
+      border: 1px solid var(--line, #dcd6c3);
+      border-radius: 7px;
+      background: var(--paper, #f5f2e9);
+      color: var(--muted, #59564d);
+      font: 500 10px/1 var(--mono, ui-monospace, monospace) !important;
+      outline: none;
+    }
+
+    [data-chirp-sidecar] .csd-search::placeholder {
+      color: var(--faint, #6b665a);
+    }
+
+    [data-chirp-sidecar] .csd-app {
+      display: grid;
+      grid-template-columns: 176px minmax(0, 1fr);
+      flex: 1;
+      min-width: 0;
+      min-height: 0;
+      background: var(--surface, #fbf9f2);
+    }
+
+    [data-chirp-sidecar] .csd-sidebar {
+      min-width: 0;
+      min-height: 0;
+      padding: 17px 10px 13px;
+      border-right: 1px solid var(--line-soft, #e5e0cf);
+      background: var(--paper, #f5f2e9);
+    }
+
+    /* Keep collection navigation in the table view, then give the editor the full frame. */
+    [data-chirp-sidecar][data-browser-screen="editor"] .csd-app {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    [data-chirp-sidecar][data-browser-screen="editor"] .csd-sidebar {
+      display: none;
+    }
+
+    [data-chirp-sidecar] .csd-sidebar-label {
+      margin: 0 8px 9px !important;
+      color: var(--faint, #6b665a);
+      font: 700 8px/1 var(--mono, ui-monospace, monospace) !important;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+    }
+
+    [data-chirp-sidecar] .csd-collection-list {
+      display: grid;
+      gap: 3px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    [data-chirp-sidecar] .csd-collection-button {
+      display: grid;
+      grid-template-columns: 18px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 7px;
+      width: 100%;
+      min-height: 31px;
+      margin: 0 !important;
+      padding: 0 8px !important;
+      border: 0 !important;
+      border-radius: 6px !important;
+      background: transparent !important;
+      color: var(--muted, #59564d) !important;
+      font: 600 10px/1 var(--mono, ui-monospace, monospace) !important;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    [data-chirp-sidecar] .csd-collection-button:hover,
+    [data-chirp-sidecar] .csd-collection-button.is-active {
+      background: var(--surface, #fbf9f2) !important;
+      color: var(--ink, #221e17) !important;
+    }
+
+    [data-chirp-sidecar] .csd-collection-button.is-active {
+      box-shadow: inset 2px 0 var(--accent, #dd4c22), 0 1px 0 #ffffff9c;
+    }
+
+    [data-chirp-sidecar] .csd-collection-icon {
+      display: grid;
+      place-items: center;
+      width: 17px;
+      height: 17px;
+      border: 1px solid var(--line, #dcd6c3);
+      border-radius: 4px;
+      color: var(--accent-text, #a93619);
+      font: 700 8px/1 var(--mono, ui-monospace, monospace) !important;
+    }
+
+    [data-chirp-sidecar] .csd-collection-count {
+      color: var(--faint, #6b665a);
+      font-size: 9px;
+    }
+
+    [data-chirp-sidecar] .csd-main {
+      position: relative;
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+      background: var(--surface, #fbf9f2);
+    }
+
+    [data-chirp-sidecar] .csd-view {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      min-height: 0;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateX(18px);
+      pointer-events: none;
+      transition: opacity 220ms ease, transform 360ms cubic-bezier(.22, 1, .36, 1), visibility 0s linear 360ms;
+    }
+
+    [data-chirp-sidecar][data-browser-screen="entries"] .csd-view[data-view="entries"],
+    [data-chirp-sidecar][data-browser-screen="editor"] .csd-view[data-view="editor"] {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(0);
+      pointer-events: auto;
+      transition-delay: 70ms, 50ms, 0s;
+    }
+
+    [data-chirp-sidecar][data-browser-screen="editor"] .csd-view[data-view="entries"] {
+      transform: translateX(-18px);
+    }
+
+    [data-chirp-sidecar] .csd-content-header {
+      display: flex;
+      align-items: flex-end;
+      gap: 15px;
+      min-height: 88px;
+      padding: 18px 22px 14px;
+      border-bottom: 1px solid var(--line-soft, #e5e0cf);
+      background: var(--surface, #fbf9f2);
+    }
+
+    [data-chirp-sidecar] .csd-header-copy {
+      min-width: 0;
+    }
+
+    [data-chirp-sidecar] .csd-page-title {
+      margin: 0 !important;
+      color: var(--ink, #221e17);
+      font: 600 clamp(18px, 2vw, 25px)/1.05 var(--font-system, Georgia, serif) !important;
+      letter-spacing: -.035em;
+    }
+
+    [data-chirp-sidecar] .csd-page-meta {
+      margin: 5px 0 0 !important;
+      color: var(--faint, #6b665a);
+      font: 500 9px/1.4 var(--mono, ui-monospace, monospace) !important;
+    }
+
+    [data-chirp-sidecar] .csd-new-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin: 0 0 1px auto !important;
+      padding: 7px 10px !important;
+      border: 1px solid var(--ink, #221e17) !important;
+      border-radius: 6px !important;
+      background: var(--ink, #221e17) !important;
+      color: var(--surface, #fbf9f2) !important;
+      font: 700 9px/1 var(--mono, ui-monospace, monospace) !important;
+      cursor: pointer;
+    }
+
+    [data-chirp-sidecar] .csd-table-wrap {
+      min-height: 0;
+      flex: 1;
+      padding: 14px 20px 18px;
+      overflow: hidden;
+    }
+
+    [data-chirp-sidecar] .csd-table-card {
+      height: 100%;
+      overflow: hidden;
+      border: 1px solid var(--line, #dcd6c3);
+      border-radius: 9px;
+      background: #fffdfa;
+      box-shadow: var(--small-shadow, 0 16px 40px -24px #2e26184d);
+    }
+
+    [data-chirp-sidecar] .csd-table-head,
+    [data-chirp-sidecar] .csd-entry-row {
+      display: grid;
+      grid-template-columns: minmax(150px, 1.2fr) minmax(110px, .85fr) 86px 88px;
+      align-items: center;
+      gap: 12px;
+      min-height: 43px;
+      padding: 0 14px;
+    }
+
+    [data-chirp-sidecar] .csd-table-head {
+      min-height: 36px;
+      border-bottom: 1px solid var(--line-soft, #e5e0cf);
+      background: var(--paper, #f5f2e9);
+      color: var(--faint, #6b665a);
+      font: 700 8px/1 var(--mono, ui-monospace, monospace) !important;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+    }
+
+    [data-chirp-sidecar] .csd-entry-row {
+      position: relative;
+      width: 100%;
+      margin: 0 !important;
+      border: 0 !important;
+      border-bottom: 1px solid var(--line-soft, #e5e0cf) !important;
+      background: transparent !important;
+      color: var(--muted, #59564d) !important;
+      text-align: left;
+      cursor: pointer;
+      transition: background 160ms ease, box-shadow 160ms ease, transform 200ms ease;
+    }
+
+    [data-chirp-sidecar] .csd-entry-row:last-child {
+      border-bottom: 0 !important;
+    }
+
+    [data-chirp-sidecar] .csd-entry-row:hover,
+    [data-chirp-sidecar] .csd-entry-row.is-guided {
+      background: var(--paper, #f5f2e9) !important;
+    }
+
+    [data-chirp-sidecar] .csd-entry-row.is-guided {
+      box-shadow: inset 3px 0 var(--accent, #dd4c22);
+      transform: translateX(2px);
+    }
+
+    [data-chirp-sidecar] .csd-entry-title {
+      color: var(--ink, #221e17);
+      font: 600 12px/1.2 var(--font-system, Georgia, serif) !important;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    [data-chirp-sidecar] .csd-cell {
+      color: var(--muted, #59564d);
+      font: 500 9px/1.2 var(--mono, ui-monospace, monospace) !important;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    [data-chirp-sidecar] .csd-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      width: fit-content;
+      color: var(--green-text, #47612f);
+      font: 600 9px/1 var(--mono, ui-monospace, monospace) !important;
+    }
+
+    [data-chirp-sidecar] .csd-status::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--green, #5c7a45);
+    }
+
+    [data-chirp-sidecar] .csd-status.is-draft {
+      color: var(--amber-text, #805617);
+    }
+
+    [data-chirp-sidecar] .csd-status.is-draft::before {
+      background: var(--amber, #9a6b23);
+    }
+
+    [data-chirp-sidecar] .csd-editor-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      height: 49px;
+      padding: 0 15px;
+      border-bottom: 1px solid var(--line-soft, #e5e0cf);
+      background: var(--surface, #fbf9f2);
+    }
+
+    [data-chirp-sidecar] .csd-back {
+      display: grid;
+      place-items: center;
+      width: 27px;
+      height: 27px;
+      margin: 0 !important;
+      padding: 0 !important;
+      border: 1px solid var(--line, #dcd6c3) !important;
+      border-radius: 6px !important;
+      background: transparent !important;
+      color: var(--muted, #59564d) !important;
+      cursor: pointer;
+    }
+
+    [data-chirp-sidecar] .csd-editor-path {
+      min-width: 0;
+      color: var(--faint, #6b665a);
+      font: 500 9px/1 var(--mono, ui-monospace, monospace) !important;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    [data-chirp-sidecar] .csd-editor-path strong {
+      color: var(--ink, #221e17);
+      font-weight: 700;
+    }
+
+    [data-chirp-sidecar] .csd-saved {
+      margin-left: auto;
+      color: var(--green-text, #47612f);
+      font: 600 9px/1 var(--mono, ui-monospace, monospace) !important;
+    }
+
+    [data-chirp-sidecar] .csd-editor-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 250px;
+      min-width: 0;
+      min-height: 0;
+      flex: 1;
+      background: var(--paper, #f5f2e9);
+    }
+
+    [data-chirp-sidecar] .csd-editor-area {
+      min-width: 0;
+      min-height: 0;
+      padding: 15px 18px 18px;
+      overflow: hidden;
+    }
+
+    [data-chirp-sidecar] .csd-editor-card {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+      border: 1px solid var(--line, #dcd6c3);
+      border-radius: 9px;
+      background: #fffdfa;
+      box-shadow: var(--small-shadow, 0 16px 40px -24px #2e26184d);
+    }
+
+    [data-chirp-sidecar] .csd-tiptap-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      min-height: 38px;
+      padding: 0 9px;
+      border-bottom: 1px solid var(--line-soft, #e5e0cf);
+      background: var(--surface, #fbf9f2);
+    }
+
+    [data-chirp-sidecar] .csd-tool {
+      display: grid;
+      place-items: center;
+      min-width: 25px;
+      height: 25px;
+      margin: 0 !important;
+      padding: 0 6px !important;
+      border: 0 !important;
+      border-radius: 5px !important;
+      background: transparent !important;
+      color: var(--muted, #59564d) !important;
+      font: 700 9px/1 var(--mono, ui-monospace, monospace) !important;
+      cursor: pointer;
+    }
+
+    [data-chirp-sidecar] .csd-tool:hover,
+    [data-chirp-sidecar] .csd-tool.is-active {
+      background: var(--paper-deep, #fff) !important;
+      color: var(--ink, #221e17) !important;
+    }
+
+    [data-chirp-sidecar] .csd-divider {
+      width: 1px;
+      height: 17px;
+      margin: 0 4px;
+      background: var(--line, #dcd6c3);
+    }
+
+    [data-chirp-sidecar] .csd-editor-canvas {
+      min-height: 0;
+      flex: 1;
+      overflow: auto;
+      padding: 27px clamp(24px, 5vw, 58px) 40px;
+      color: var(--ink-soft, #3d382c);
+      font-family: var(--font-system, Georgia, serif);
+      scrollbar-width: thin;
+      scrollbar-color: var(--line, #dcd6c3) transparent;
+      outline: none;
+    }
+
+    [data-chirp-sidecar] .csd-editor-canvas .csd-editor-entry-title {
+      margin: 0 0 12px !important;
+      color: var(--ink, #221e17);
+      font: 600 clamp(25px, 3vw, 37px)/1.02 var(--font-system, Georgia, serif) !important;
+      letter-spacing: -.045em;
+    }
+
+    [data-chirp-sidecar] .csd-editor-canvas .csd-lead {
+      margin: 0 0 22px !important;
+      color: var(--muted, #59564d);
+      font: 400 14px/1.55 var(--font-system, Georgia, serif) !important;
+    }
+
+    [data-chirp-sidecar] .csd-editor-canvas h2 {
+      margin: 24px 0 8px !important;
+      color: var(--ink, #221e17);
+      font: 600 18px/1.15 var(--font-system, Georgia, serif) !important;
+      letter-spacing: -.025em;
+    }
+
+    [data-chirp-sidecar] .csd-editor-canvas p,
+    [data-chirp-sidecar] .csd-editor-canvas li {
+      color: var(--ink-soft, #3d382c);
+      font: 400 12px/1.65 var(--font-system, Georgia, serif) !important;
+    }
+
+    [data-chirp-sidecar] .csd-editor-canvas p {
+      margin: 0 0 12px !important;
+    }
+
+    [data-chirp-sidecar] .csd-editor-canvas ul {
+      margin: 0 !important;
+      padding-left: 20px !important;
+    }
+
+    [data-chirp-sidecar] .csd-slash-hint {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 18px;
+      padding: 6px 8px;
+      border: 1px dashed var(--line, #dcd6c3);
+      border-radius: 6px;
+      color: var(--faint, #6b665a);
+      font: 500 9px/1 var(--mono, ui-monospace, monospace) !important;
+    }
+
+    [data-chirp-sidecar] .csd-frontmatter {
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+      border-left: 1px solid var(--line-soft, #e5e0cf);
+      background: var(--surface, #fbf9f2);
+    }
+
+    [data-chirp-sidecar] .csd-panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 42px;
+      padding: 0 13px;
+      border-bottom: 1px solid var(--line-soft, #e5e0cf);
+    }
+
+    [data-chirp-sidecar] .csd-panel-title {
+      margin: 0 !important;
+      color: var(--ink, #221e17);
+      font: 700 9px/1 var(--mono, ui-monospace, monospace) !important;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    [data-chirp-sidecar] .csd-field-count {
+      color: var(--faint, #6b665a);
+      font: 500 8px/1 var(--mono, ui-monospace, monospace) !important;
+    }
+
+    [data-chirp-sidecar] .csd-fields {
+      display: grid;
+      gap: 11px;
+      height: calc(100% - 42px);
+      padding: 13px;
+      overflow: auto;
+      scrollbar-width: thin;
+      scrollbar-color: var(--line, #dcd6c3) transparent;
+    }
+
+    [data-chirp-sidecar] .csd-field {
+      display: grid;
+      gap: 5px;
+    }
+
+    [data-chirp-sidecar] .csd-field-label {
+      color: var(--faint, #6b665a);
+      font: 700 8px/1 var(--mono, ui-monospace, monospace) !important;
+    }
+
+    [data-chirp-sidecar] .csd-field-input,
+    [data-chirp-sidecar] .csd-field-select {
+      width: 100%;
+      height: 30px;
+      min-width: 0;
+      margin: 0 !important;
+      padding: 0 8px !important;
+      border: 1px solid var(--line, #dcd6c3) !important;
+      border-radius: 6px !important;
+      background: #fffdfa !important;
+      color: var(--ink-soft, #3d382c) !important;
+      font: 500 9px/1 var(--mono, ui-monospace, monospace) !important;
+      outline: none;
+    }
+
+    [data-chirp-sidecar] .csd-field-input:focus,
+    [data-chirp-sidecar] .csd-field-select:focus {
+      border-color: var(--accent, #dd4c22) !important;
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-soft, #f0d9cb) 80%, transparent);
+    }
+
+    [data-chirp-sidecar] .csd-image-field {
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr);
+      gap: 9px;
+      align-items: center;
+      min-height: 54px;
+      padding: 7px;
+      border: 1px solid var(--line, #dcd6c3);
+      border-radius: 7px;
+      background: #fffdfa;
+    }
+
+    [data-chirp-sidecar] .csd-image-thumb {
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 40px;
+      border-radius: 5px;
+      background:
+        radial-gradient(circle at 68% 32%, #f4d192 0 8%, transparent 9%),
+        linear-gradient(145deg, #59754c 0 46%, #8eaa71 47% 63%, #d4bd74 64% 100%);
+      color: white;
+      font-size: 12px;
+    }
+
+    [data-chirp-sidecar] .csd-image-copy {
+      min-width: 0;
+      color: var(--ink-soft, #3d382c);
+      font: 600 9px/1.35 var(--mono, ui-monospace, monospace) !important;
+    }
+
+    [data-chirp-sidecar] .csd-image-copy small {
+      display: block;
+      margin-top: 3px;
+      color: var(--faint, #6b665a);
+      font: 500 8px/1.25 var(--mono, ui-monospace, monospace) !important;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    [data-chirp-sidecar] .csd-evolution-note {
+      position: absolute;
+      right: 18px;
+      bottom: 14px;
+      z-index: 7;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 9px;
+      border: 1px solid var(--line, #dcd6c3);
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--surface, #fbf9f2) 93%, transparent);
+      color: var(--muted, #59564d);
+      font: 600 8px/1 var(--mono, ui-monospace, monospace) !important;
+      box-shadow: var(--small-shadow, 0 16px 40px -24px #2e26184d);
+      opacity: 0;
+      transform: translateY(7px);
+      transition: opacity 240ms ease, transform 300ms cubic-bezier(.22, 1, .36, 1);
+      pointer-events: none;
+    }
+
+    [data-chirp-sidecar][data-browser-screen="editor"] .csd-evolution-note {
+      opacity: 1;
+      transform: translateY(0);
+      transition-delay: 480ms;
+    }
+
+    [data-chirp-sidecar] .csd-evolution-note strong {
+      color: var(--accent-text, #a93619);
+    }
+
+    @keyframes csd-cursor {
+      0%, 46% { opacity: 1; }
+      47%, 100% { opacity: 0; }
+    }
+
+    @keyframes csd-pulse {
+      from { opacity: .45; }
+      to { opacity: 1; }
+    }
+
+    @media (max-width: 820px) {
+      [data-chirp-sidecar] .csd-frame {
+        height: 620px;
+      }
+
+      [data-chirp-sidecar] .csd-app {
+        grid-template-columns: 145px minmax(0, 1fr);
+      }
+
+      [data-chirp-sidecar] .csd-editor-layout {
+        grid-template-columns: minmax(0, 1fr) 215px;
+      }
+
+      [data-chirp-sidecar] .csd-table-head,
+      [data-chirp-sidecar] .csd-entry-row {
+        grid-template-columns: minmax(140px, 1fr) minmax(90px, .8fr) 75px;
+      }
+
+      [data-chirp-sidecar] .csd-table-head > :last-child,
+      [data-chirp-sidecar] .csd-entry-row > :last-child {
+        display: none;
+      }
+
+      [data-chirp-sidecar] .csd-search {
+        display: none;
+      }
+    }
+
+    @media (max-width: 640px) {
+      [data-chirp-sidecar] .csd-frame {
+        height: 610px;
+        border-radius: 10px;
+      }
+
+      [data-chirp-sidecar] .csd-terminal-screen {
+        padding: 23px 19px 20px;
+        font-size: 10px !important;
+      }
+
+      [data-chirp-sidecar] .csd-browser-controls {
+        inset-inline: 53px 76px;
+      }
+
+      [data-chirp-sidecar] .csd-nav-buttons {
+        display: none;
+      }
+
+      [data-chirp-sidecar] .csd-browser-controls {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      [data-chirp-sidecar] .csd-appbar {
+        height: 45px;
+        padding-inline: 11px;
+      }
+
+      [data-chirp-sidecar] .csd-local-pill {
+        display: none;
+      }
+
+      [data-chirp-sidecar] .csd-app {
+        grid-template-columns: 1fr;
+      }
+
+      [data-chirp-sidecar] .csd-sidebar {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        min-height: 47px;
+        padding: 7px 9px;
+        overflow-x: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--line-soft, #e5e0cf);
+        scrollbar-width: none;
+      }
+
+      [data-chirp-sidecar] .csd-sidebar::-webkit-scrollbar {
+        display: none;
+      }
+
+      [data-chirp-sidecar] .csd-sidebar-label {
+        display: none;
+      }
+
+      [data-chirp-sidecar] .csd-collection-list {
+        display: flex;
+        gap: 4px;
+      }
+
+      [data-chirp-sidecar] .csd-collection-button {
+        grid-template-columns: 16px auto;
+        width: auto;
+        padding-inline: 7px !important;
+        white-space: nowrap;
+      }
+
+      [data-chirp-sidecar] .csd-collection-count {
+        display: none;
+      }
+
+      [data-chirp-sidecar] .csd-content-header {
+        min-height: 76px;
+        padding: 13px 14px 11px;
+      }
+
+      [data-chirp-sidecar] .csd-new-button {
+        display: none;
+      }
+
+      [data-chirp-sidecar] .csd-table-wrap {
+        padding: 10px 11px 12px;
+      }
+
+      [data-chirp-sidecar] .csd-table-head,
+      [data-chirp-sidecar] .csd-entry-row {
+        grid-template-columns: minmax(130px, 1fr) 72px;
+        gap: 8px;
+        padding-inline: 10px;
+      }
+
+      [data-chirp-sidecar] .csd-table-head > :nth-child(2),
+      [data-chirp-sidecar] .csd-table-head > :last-child,
+      [data-chirp-sidecar] .csd-entry-row > :nth-child(2),
+      [data-chirp-sidecar] .csd-entry-row > :last-child {
+        display: none;
+      }
+
+      [data-chirp-sidecar] .csd-editor-layout {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      [data-chirp-sidecar] .csd-frontmatter {
+        position: absolute;
+        inset: 49px 0 0 auto;
+        z-index: 3;
+        width: min(260px, 86%);
+        border-left: 1px solid var(--line, #dcd6c3);
+        box-shadow: -18px 0 38px -28px #2e261899;
+        transform: translateX(102%);
+        transition: transform 300ms cubic-bezier(.22, 1, .36, 1);
+      }
+
+      [data-chirp-sidecar][data-panel-open="true"] .csd-frontmatter {
+        transform: translateX(0);
+      }
+
+      [data-chirp-sidecar] .csd-editor-area {
+        padding: 10px;
+      }
+
+      [data-chirp-sidecar] .csd-editor-canvas {
+        padding: 22px 22px 35px;
+      }
+
+      [data-chirp-sidecar] .csd-evolution-note {
+        right: 11px;
+        bottom: 10px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      [data-chirp-sidecar] *,
+      [data-chirp-sidecar] *::before,
+      [data-chirp-sidecar] *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .001ms !important;
+        transition-delay: 0ms !important;
+      }
+    }
+  </style>
+
+  <div class="csd-frame" data-frame tabindex="0" aria-label="Chirp sidecar editor demo">
+    <div class="csd-toolbar">
+      <span class="csd-dots" aria-hidden="true">
+        <span class="csd-dot"></span>
+        <span class="csd-dot"></span>
+        <span class="csd-dot"></span>
+      </span>
+      <span class="csd-terminal-title">chirp - ~/garden-site</span>
+
+      <div class="csd-browser-controls" aria-hidden="true">
+        <div class="csd-nav-buttons">
+          <button class="csd-nav-button" type="button" data-browser-back aria-label="Back">←</button>
+          <button class="csd-nav-button" type="button" aria-label="Forward">→</button>
+        </div>
+        <div class="csd-address">
+          <span class="csd-lock">●</span>
+          <span class="csd-url" data-browser-url>localhost:1234/__chirp/content/posts</span>
+        </div>
+      </div>
+
+      <button class="csd-replay" type="button" data-replay>Replay</button>
+    </div>
+
+    <div class="csd-stage">
+      <section class="csd-terminal-screen" aria-label="Start Chirp sidecar">
+        <div class="csd-command-line">
+          <span class="csd-prompt">~&nbsp;</span>
+          <span class="csd-command" data-command></span>
+          <span class="csd-cursor" aria-hidden="true"></span>
+        </div>
+
+        <div class="csd-log" aria-live="polite">
+          <div class="csd-task" data-task data-running="reading src/content.config.ts" data-complete="read src/content.config.ts · 3 collections">
+            <span class="csd-task-icon" data-task-icon>·</span>
+            <span class="csd-task-label" data-task-label></span>
+          </div>
+          <div class="csd-task" data-task data-running="validating collection schemas" data-complete="validated 3 schemas · 44 fields">
+            <span class="csd-task-icon" data-task-icon>·</span>
+            <span class="csd-task-label" data-task-label></span>
+          </div>
+          <div class="csd-task" data-task data-running="indexing markdown and mdx entries" data-complete="indexed 44 entries · nothing crossed the wire">
+            <span class="csd-task-icon" data-task-icon>·</span>
+            <span class="csd-task-label" data-task-label></span>
+          </div>
+          <div class="csd-task" data-task data-running="starting local sidecar" data-complete="sidecar listening on localhost:1234">
+            <span class="csd-task-icon" data-task-icon>·</span>
+            <span class="csd-task-label" data-task-label></span>
+          </div>
+        </div>
+
+        <div class="csd-ready">
+          <span class="csd-ready-icon">✓</span>
+          <div class="csd-ready-copy">
+            <span class="csd-ready-title">Chirp is ready.</span>
+            <span class="csd-ready-meta">Your Astro project remains the source of truth.</span>
+            <span class="csd-astro-status">astro 7.0.2 running on localhost:1234</span>
+            <a class="csd-open-editor" href="http://localhost:1234/__chirp/content/posts" data-open-editor>
+              Open the local editor <span aria-hidden="true">↗</span>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section class="csd-browser-screen" aria-label="Chirp local editor">
+        <header class="csd-appbar">
+          <div class="csd-brand"><span>chirp</span></div>
+          <span class="csd-local-pill"><span class="csd-local-dot"></span> local sidecar</span>
+          <div class="csd-app-actions">
+            <input class="csd-search" type="search" placeholder="Search content…  ⌘K" aria-label="Search content" />
+          </div>
+        </header>
+
+        <div class="csd-app">
+          <aside class="csd-sidebar" aria-label="Content collections">
+            <p class="csd-sidebar-label">Collections</p>
+            <ul class="csd-collection-list">
+              <li>
+                <button class="csd-collection-button is-active" type="button" data-collection="posts">
+                  <span class="csd-collection-icon">P</span><span>Posts</span><span class="csd-collection-count">12</span>
+                </button>
+              </li>
+              <li>
+                <button class="csd-collection-button" type="button" data-collection="plants">
+                  <span class="csd-collection-icon">✦</span><span>Plants</span><span class="csd-collection-count">24</span>
+                </button>
+              </li>
+              <li>
+                <button class="csd-collection-button" type="button" data-collection="recipes">
+                  <span class="csd-collection-icon">R</span><span>Recipes</span><span class="csd-collection-count">8</span>
+                </button>
+              </li>
+            </ul>
+          </aside>
+
+          <main class="csd-main">
+            <section class="csd-view" data-view="entries" aria-label="Posts collection">
+              <header class="csd-content-header">
+                <div class="csd-header-copy">
+                  <h2 class="csd-page-title" data-collection-title>Posts</h2>
+                  <p class="csd-page-meta" data-collection-meta>12 entries · src/content/posts</p>
+                </div>
+                <button class="csd-new-button" type="button">＋ New entry</button>
+              </header>
+
+              <div class="csd-table-wrap">
+                <div class="csd-table-card">
+                  <div class="csd-table-head"><span>Title</span><span>Slug</span><span>Status</span><span>Updated</span></div>
+                  <div data-entry-list>
+                    <button class="csd-entry-row" type="button" data-entry="script-to-platform">
+                      <span class="csd-entry-title">From script to platform</span>
+                      <span class="csd-cell">script-to-platform</span>
+                      <span class="csd-status">Published</span>
+                      <span class="csd-cell">Today</span>
+                    </button>
+                    <button class="csd-entry-row" type="button" data-entry="schema-source">
+                      <span class="csd-entry-title">Your schema stays the source</span>
+                      <span class="csd-cell">schema-as-source</span>
+                      <span class="csd-status is-draft">Draft</span>
+                      <span class="csd-cell">2d ago</span>
+                    </button>
+                    <button class="csd-entry-row" type="button" data-entry="offline-editing">
+                      <span class="csd-entry-title">Editing without crossing the wire</span>
+                      <span class="csd-cell">offline-editing</span>
+                      <span class="csd-status">Published</span>
+                      <span class="csd-cell">5d ago</span>
+                    </button>
+                    <button class="csd-entry-row" type="button" data-entry="better-mdx">
+                      <span class="csd-entry-title">A better way to work with mdx</span>
+                      <span class="csd-cell">better-mdx</span>
+                      <span class="csd-status">Published</span>
+                      <span class="csd-cell">1w ago</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="csd-view" data-view="editor" aria-label="Visual content editor">
+              <header class="csd-editor-header">
+                <button class="csd-back" type="button" data-editor-back aria-label="Back to entries">←</button>
+                <div class="csd-editor-path"><span data-editor-collection>Posts</span> / <strong data-editor-name>From script to platform</strong></div>
+                <span class="csd-saved" data-save-state>✓ Saved locally</span>
+              </header>
+
+              <div class="csd-editor-layout">
+                <div class="csd-editor-area">
+                  <div class="csd-editor-card">
+                    <div class="csd-tiptap-toolbar" aria-label="Visual editor toolbar">
+                      <button class="csd-tool" type="button" data-tool="paragraph">¶</button>
+                      <button class="csd-tool is-active" type="button" data-tool="heading">H2</button>
+                      <span class="csd-divider"></span>
+                      <button class="csd-tool" type="button" data-tool="bold">B</button>
+                      <button class="csd-tool" type="button" data-tool="italic"><em>I</em></button>
+                      <button class="csd-tool" type="button" data-tool="link">↗</button>
+                      <span class="csd-divider"></span>
+                      <button class="csd-tool" type="button" data-tool="quote">❞</button>
+                      <button class="csd-tool" type="button" data-tool="list">☷</button>
+                      <button class="csd-tool" type="button" data-toggle-panel>Fields</button>
+                    </div>
+
+                    <article class="csd-editor-canvas" contenteditable="true" spellcheck="false" data-editor-canvas>
+                      <h2 class="csd-editor-entry-title" data-editor-entry-title>From script to platform</h2>
+                      <p class="csd-lead">Select any entry from the collection table to load its own frontmatter and markdown into the visual editor.</p>
+                      <span class="csd-slash-hint">Type <strong>/</strong> for commands</span>
+                    </article>
+                  </div>
+                </div>
+
+                <aside class="csd-frontmatter" aria-label="Frontmatter fields">
+                  <div class="csd-panel-head">
+                    <h3 class="csd-panel-title">Frontmatter</h3>
+                    <span class="csd-field-count" data-field-count>7 fields</span>
+                  </div>
+                  <div class="csd-fields" data-fields></div>
+                </aside>
+              </div>
+            </section>
+          </main>
+        </div>
+
+        <div class="csd-evolution-note"><strong>same source</strong><span>terminal → local editor → visual editing</span></div>
+      </section>
+    </div>
+  </div>
+
+  <script type="application/json" data-demo-content set:html={serialisedDemoContent}></script>
+
+  <script>
+    const initialiseChirpSidecarDemos = () => {
+      const roots = document.querySelectorAll("[data-chirp-sidecar]:not([data-csd-initialised])");
+
+      roots.forEach((root) => {
+        if (!(root instanceof HTMLElement)) return;
+        root.dataset.csdInitialised = "true";
+
+        const style = root.querySelector("[data-csd-style]");
+        const frame = root.querySelector("[data-frame]");
+        const command = root.querySelector("[data-command]");
+        const tasks = Array.from(root.querySelectorAll("[data-task]"));
+        const openEditorLink = root.querySelector("[data-open-editor]");
+        const replay = root.querySelector("[data-replay]");
+        const browserBack = root.querySelector("[data-browser-back]");
+        const editorBack = root.querySelector("[data-editor-back]");
+        const browserUrl = root.querySelector("[data-browser-url]");
+        const collectionButtons = Array.from(root.querySelectorAll("[data-collection]"));
+        const collectionTitle = root.querySelector("[data-collection-title]");
+        const collectionMeta = root.querySelector("[data-collection-meta]");
+        const entryList = root.querySelector("[data-entry-list]");
+        const editorCanvas = root.querySelector("[data-editor-canvas]");
+        const editorName = root.querySelector("[data-editor-name]");
+        const editorCollection = root.querySelector("[data-editor-collection]");
+        const fieldsContainer = root.querySelector("[data-fields]");
+        const fieldCount = root.querySelector("[data-field-count]");
+        const saveState = root.querySelector("[data-save-state]");
+        const togglePanel = root.querySelector("[data-toggle-panel]");
+        const demoContentNode = root.querySelector("[data-demo-content]");
+
+        if (!(frame instanceof HTMLElement) || !(command instanceof HTMLElement)) return;
+
+        const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        let stylesActivated = false;
+        let started = false;
+        let running = false;
+        let sufficientlyVisible = false;
+        let autoAdvanceToken = 0;
+        let saveTimer = 0;
+        const visibilityWaiters = new Set();
+
+        let demoData = { collections: {} };
+        if (demoContentNode instanceof HTMLScriptElement) {
+          try {
+            demoData = JSON.parse(demoContentNode.textContent || "{}");
+          } catch (error) {
+            console.warn("Unable to read Chirp sidecar demo content.", error);
+          }
+        }
+
+        const collections = demoData.collections || {};
+        let activeCollectionKey = "posts";
+        let activeEntryId = null;
+
+
+        const activateStyles = () => {
+          if (stylesActivated) return;
+          stylesActivated = true;
+          if (style instanceof HTMLStyleElement) style.media = "all";
+          root.style.visibility = "visible";
+        };
+
+        const releaseVisibilityWaiters = () => {
+          if (!sufficientlyVisible || document.hidden) return;
+          visibilityWaiters.forEach((resolve) => resolve());
+          visibilityWaiters.clear();
+        };
+
+        const waitUntilVisible = () => {
+          if (sufficientlyVisible && !document.hidden) return Promise.resolve();
+          return new Promise((resolve) => visibilityWaiters.add(resolve));
+        };
+
+        const visibleSleep = async (duration) => {
+          if (reduceMotion || duration <= 0) return;
+          let remaining = duration;
+          while (remaining > 0) {
+            await waitUntilVisible();
+            const slice = Math.min(remaining, 50);
+            const start = performance.now();
+            await new Promise((resolve) => window.setTimeout(resolve, slice));
+            if (sufficientlyVisible && !document.hidden) remaining -= performance.now() - start;
+          }
+        };
+
+        const resetTasks = () => {
+          tasks.forEach((task) => {
+            if (!(task instanceof HTMLElement)) return;
+            task.classList.remove("is-visible", "is-running", "is-complete");
+            const icon = task.querySelector("[data-task-icon]");
+            const label = task.querySelector("[data-task-label]");
+            if (icon instanceof HTMLElement) icon.textContent = "·";
+            if (label instanceof HTMLElement) label.textContent = task.dataset.running || "";
+          });
+        };
+
+        const getCollection = (collectionKey = activeCollectionKey) => collections[collectionKey];
+
+        const getEntry = (collectionKey, entryId) => {
+          const collection = getCollection(collectionKey);
+          return collection?.entries?.find((entry) => entry.id === entryId) || null;
+        };
+
+        const setBrowserScreen = (screen) => {
+          root.dataset.browserScreen = screen;
+          if (!(browserUrl instanceof HTMLElement)) return;
+          const base = `localhost:1234/__chirp/content/${activeCollectionKey}`;
+          browserUrl.textContent = screen === "editor" && activeEntryId
+            ? `${base}/${activeEntryId}`
+            : base;
+        };
+
+        const escapeHtml = (value) => String(value)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+
+        const renderInlinemarkdown = (value) => escapeHtml(value)
+          .replace(/`([^`]+)`/g, "<code>$1</code>")
+          .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+          .replace(/\*([^*]+)\*/g, "<em>$1</em>");
+
+        const markdownToHtml = (markdown) => {
+          const lines = String(markdown || "").trim().split(/\r?\n/);
+          const html = [];
+          let paragraph = [];
+          let list = [];
+          let paragraphIndex = 0;
+
+          const flushParagraph = () => {
+            if (!paragraph.length) return;
+            const className = paragraphIndex === 0 ? ' class="csd-lead"' : "";
+            html.push(`<p${className}>${renderInlinemarkdown(paragraph.join(" "))}</p>`);
+            paragraph = [];
+            paragraphIndex += 1;
+          };
+
+          const flushList = () => {
+            if (!list.length) return;
+            html.push(`<ul>${list.map((item) => `<li>${renderInlinemarkdown(item)}</li>`).join("")}</ul>`);
+            list = [];
+          };
+
+          lines.forEach((line) => {
+            const trimmed = line.trim();
+            if (!trimmed) {
+              flushParagraph();
+              flushList();
+              return;
+            }
+
+            const listMatch = trimmed.match(/^[-*]\s+(.+)$/);
+            if (listMatch) {
+              flushParagraph();
+              list.push(listMatch[1]);
+              return;
+            }
+
+            flushList();
+            const headingMatch = trimmed.match(/^(#{1,3})\s+(.+)$/);
+            if (headingMatch) {
+              flushParagraph();
+              const level = headingMatch[1].length;
+              html.push(`<h${level}>${renderInlinemarkdown(headingMatch[2])}</h${level}>`);
+              return;
+            }
+
+            const quoteMatch = trimmed.match(/^>\s+(.+)$/);
+            if (quoteMatch) {
+              flushParagraph();
+              html.push(`<blockquote>${renderInlinemarkdown(quoteMatch[1])}</blockquote>`);
+              return;
+            }
+
+            paragraph.push(trimmed);
+          });
+
+          flushParagraph();
+          flushList();
+          html.push('<span class="csd-slash-hint">Type <strong>/</strong> for commands</span>');
+          return html.join("");
+        };
+
+        const createFieldControl = (key, value) => {
+          const label = document.createElement("label");
+          label.className = "csd-field";
+
+          const fieldLabel = document.createElement("span");
+          fieldLabel.className = "csd-field-label";
+          fieldLabel.textContent = key;
+          label.append(fieldLabel);
+
+          if (key === "image" && typeof value === "string") {
+            const imageField = document.createElement("div");
+            imageField.className = "csd-image-field";
+            const thumb = document.createElement("span");
+            thumb.className = "csd-image-thumb";
+            thumb.textContent = "✦";
+            const copy = document.createElement("span");
+            copy.className = "csd-image-copy";
+            copy.textContent = value;
+            const path = document.createElement("small");
+            path.textContent = `src/assets/${activeCollectionKey}/`;
+            copy.append(path);
+            imageField.append(thumb, copy);
+            label.append(imageField);
+            return label;
+          }
+
+          let control;
+          if (key === "status") {
+            control = document.createElement("select");
+            control.className = "csd-field-select";
+            ["published", "draft"].forEach((status) => {
+              const option = document.createElement("option");
+              option.value = status;
+              option.textContent = status;
+              option.selected = String(value) === status;
+              control.append(option);
+            });
+          } else if (typeof value === "boolean") {
+            control = document.createElement("select");
+            control.className = "csd-field-select";
+            ["true", "false"].forEach((booleanValue) => {
+              const option = document.createElement("option");
+              option.value = booleanValue;
+              option.textContent = booleanValue;
+              option.selected = String(value) === booleanValue;
+              control.append(option);
+            });
+          } else {
+            control = document.createElement("input");
+            control.className = "csd-field-input";
+            control.type = typeof value === "number" ? "number" : "text";
+            control.value = Array.isArray(value) ? value.join(", ") : String(value ?? "");
+          }
+
+          control.dataset.fieldKey = key;
+          if (key === "title" || key === "common_name") control.dataset.titleInput = "true";
+          label.append(control);
+          return label;
+        };
+
+        const renderFrontmatter = (entry) => {
+          if (!(fieldsContainer instanceof HTMLElement)) return;
+          fieldsContainer.replaceChildren();
+          const fields = Object.entries(entry.frontmatter || {});
+          if (fieldCount instanceof HTMLElement) fieldCount.textContent = `${fields.length} fields`;
+          fields.forEach(([key, value]) => fieldsContainer.append(createFieldControl(key, value)));
+        };
+
+        const renderRows = (collectionKey) => {
+          const collection = getCollection(collectionKey);
+          if (!collection || !(entryList instanceof HTMLElement)) return;
+          activeCollectionKey = collectionKey;
+          activeEntryId = null;
+          entryList.replaceChildren();
+          if (collectionTitle instanceof HTMLElement) collectionTitle.textContent = collection.title;
+          if (collectionMeta instanceof HTMLElement) collectionMeta.textContent = `${collection.total} entries · ${collection.path}`;
+
+          collection.entries.forEach((entry) => {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "csd-entry-row";
+            button.dataset.entry = entry.id;
+            button.innerHTML = '<span class="csd-entry-title"></span><span class="csd-cell"></span><span class="csd-status"></span><span class="csd-cell"></span>';
+            const cells = button.children;
+            if (cells[0]) cells[0].textContent = entry.title;
+            if (cells[1]) cells[1].textContent = entry.slug;
+            if (cells[2]) {
+              cells[2].textContent = entry.status.charAt(0).toUpperCase() + entry.status.slice(1);
+              if (entry.status === "draft") cells[2].classList.add("is-draft");
+            }
+            if (cells[3]) cells[3].textContent = entry.updated;
+            button.addEventListener("click", () => openEntry(collectionKey, entry.id));
+            entryList.append(button);
+          });
+
+          setBrowserScreen("entries");
+        };
+
+        const openEntry = (collectionKey, entryId) => {
+          const collection = getCollection(collectionKey);
+          const entry = getEntry(collectionKey, entryId);
+          if (!collection || !entry) return;
+
+          activeCollectionKey = collectionKey;
+          activeEntryId = entryId;
+          if (editorCollection instanceof HTMLElement) editorCollection.textContent = collection.title;
+          if (editorName instanceof HTMLElement) editorName.textContent = entry.title;
+          if (editorCanvas instanceof HTMLElement) editorCanvas.innerHTML = entry.runtimeHtml || markdownToHtml(entry.markdown);
+          renderFrontmatter(entry);
+          setBrowserScreen("editor");
+          root.dataset.complete = "true";
+        };
+
+        const morphToBrowser = () => {
+          if (root.dataset.mode === "browser") return;
+          root.dataset.mode = "browser";
+          activeCollectionKey = "posts";
+          activeEntryId = null;
+          renderRows(activeCollectionKey);
+          collectionButtons.forEach((button) => button.classList.toggle(
+            "is-active",
+            button instanceof HTMLElement && button.dataset.collection === activeCollectionKey,
+          ));
+          root.dataset.complete = "true";
+        };
+
+        const runSequence = async () => {
+          if (running) return;
+          running = true;
+          autoAdvanceToken += 1;
+          root.dataset.mode = "terminal";
+          root.dataset.browserScreen = "entries";
+          root.dataset.panelOpen = "false";
+          root.dataset.running = "false";
+          root.dataset.terminalReady = "false";
+          root.dataset.complete = "false";
+          activeCollectionKey = "posts";
+          activeEntryId = null;
+          command.textContent = "";
+          resetTasks();
+
+          const commandText = "pnpm chirp dev";
+          await visibleSleep(220);
+          if (reduceMotion) {
+            command.textContent = commandText;
+          } else {
+            for (const character of commandText) {
+              await waitUntilVisible();
+              command.textContent += character;
+              await visibleSleep(character === " " ? 48 : 24 + Math.random() * 18);
+            }
+          }
+
+          root.dataset.running = "true";
+          await visibleSleep(250);
+
+          for (const task of tasks) {
+            if (!(task instanceof HTMLElement)) continue;
+            task.classList.add("is-visible", "is-running");
+            const icon = task.querySelector("[data-task-icon]");
+            const label = task.querySelector("[data-task-label]");
+            if (icon instanceof HTMLElement) icon.textContent = "◌";
+            if (label instanceof HTMLElement) label.textContent = task.dataset.running || "";
+            await visibleSleep(500);
+            task.classList.remove("is-running");
+            task.classList.add("is-complete");
+            if (icon instanceof HTMLElement) icon.textContent = "✓";
+            if (label instanceof HTMLElement) label.textContent = task.dataset.complete || "";
+            await visibleSleep(155);
+          }
+
+          root.dataset.running = "false";
+          root.dataset.terminalReady = "true";
+          running = false;
+        };
+
+        const markUnsavedThenSaved = () => {
+          if (!(saveState instanceof HTMLElement)) return;
+          saveState.textContent = "Unsaved changes";
+          saveState.style.color = "var(--amber-text, #805617)";
+          window.clearTimeout(saveTimer);
+          saveTimer = window.setTimeout(() => {
+            saveState.textContent = "✓ Saved locally";
+            saveState.style.color = "";
+          }, 700);
+        };
+
+        if (openEditorLink instanceof HTMLAnchorElement) {
+          openEditorLink.addEventListener("click", (event) => {
+            event.preventDefault();
+            morphToBrowser();
+          });
+        }
+
+        if (replay instanceof HTMLButtonElement) replay.addEventListener("click", () => void runSequence());
+
+        const returnToCollection = () => {
+          autoAdvanceToken += 1;
+          const collectionKey = activeCollectionKey;
+          activeEntryId = null;
+          renderRows(collectionKey);
+        };
+
+        if (browserBack instanceof HTMLButtonElement) {
+          browserBack.addEventListener("click", () => {
+            if (root.dataset.browserScreen === "editor") returnToCollection();
+          });
+        }
+
+        if (editorBack instanceof HTMLButtonElement) {
+          editorBack.addEventListener("click", returnToCollection);
+        }
+
+        collectionButtons.forEach((button) => {
+          button.addEventListener("click", () => {
+            if (!(button instanceof HTMLElement) || !button.dataset.collection) return;
+            autoAdvanceToken += 1;
+            collectionButtons.forEach((item) => item.classList.toggle("is-active", item === button));
+            renderRows(button.dataset.collection);
+          });
+        });
+
+        root.querySelectorAll("[data-tool]").forEach((tool) => {
+          tool.addEventListener("click", () => {
+            root.querySelectorAll("[data-tool]").forEach((item) => item.classList.toggle("is-active", item === tool));
+            frame.focus({ preventScroll: true });
+          });
+        });
+
+        if (togglePanel instanceof HTMLButtonElement) {
+          togglePanel.addEventListener("click", () => {
+            root.dataset.panelOpen = String(root.dataset.panelOpen !== "true");
+          });
+        }
+
+        if (editorCanvas instanceof HTMLElement) {
+          editorCanvas.addEventListener("input", () => {
+            const entry = activeEntryId ? getEntry(activeCollectionKey, activeEntryId) : null;
+            if (entry) entry.runtimeHtml = editorCanvas.innerHTML;
+            markUnsavedThenSaved();
+          });
+        }
+
+        if (fieldsContainer instanceof HTMLElement) {
+          fieldsContainer.addEventListener("input", (event) => {
+            const control = event.target;
+            if (!(control instanceof HTMLInputElement) && !(control instanceof HTMLSelectElement)) return;
+            const key = control.dataset.fieldKey;
+            const entry = activeEntryId ? getEntry(activeCollectionKey, activeEntryId) : null;
+            if (!key || !entry) return;
+
+            let value = control.value;
+            const originalValue = entry.frontmatter?.[key];
+            if (typeof originalValue === "boolean") value = control.value === "true";
+            if (typeof originalValue === "number") value = Number(control.value);
+            entry.frontmatter[key] = value;
+
+            if (control.dataset.titleInput === "true") {
+              const title = String(value || "Untitled");
+              entry.title = title;
+              if (editorName instanceof HTMLElement) editorName.textContent = title;
+              const heading = editorCanvas?.querySelector("[data-editor-entry-title]");
+              if (heading instanceof HTMLElement) heading.textContent = title;
+            }
+            markUnsavedThenSaved();
+          });
+        }
+
+        frame.addEventListener("keydown", (event) => {
+          if (event.key === "Escape" && root.dataset.mode === "browser" && root.dataset.browserScreen === "editor") {
+            event.preventDefault();
+            returnToCollection();
+          }
+          if (event.key.toLowerCase() === "r" && (event.metaKey || event.ctrlKey)) {
+            event.preventDefault();
+            void runSequence();
+          }
+        });
+
+        const observer = new IntersectionObserver(
+          (entries) => {
+            const entry = entries[0];
+            if (!entry) return;
+            if (entry.isIntersecting) activateStyles();
+            sufficientlyVisible = entry.isIntersecting && entry.intersectionRatio >= 0.24;
+            releaseVisibilityWaiters();
+            if (sufficientlyVisible && !started) {
+              started = true;
+              void runSequence();
+            }
+          },
+          { threshold: [0, 0.06, 0.14, 0.24, 0.4, 0.7], rootMargin: "0px 0px -3% 0px" },
+        );
+
+        observer.observe(root);
+        document.addEventListener("visibilitychange", releaseVisibilityWaiters);
+      });
+    };
+
+    initialiseChirpSidecarDemos();
+    document.addEventListener("astro:page-load", initialiseChirpSidecarDemos);
+  </script>
+</section>

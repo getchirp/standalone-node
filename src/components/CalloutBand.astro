@@ -1,0 +1,18 @@
+---
+interface Props {
+  id?: string;
+}
+
+const { id } = Astro.props;
+---
+
+<section class="callout-band" id={id}>
+  <div class="wrap callout-grid">
+    <div class="callout-copy">
+      <slot />
+    </div>
+    <aside class="callout-aside">
+      <slot name="aside" />
+    </aside>
+  </div>
+</section>

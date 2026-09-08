@@ -1,0 +1,443 @@
+/* ── Guides hero ──────────────────────────────── */
+
+.guides-hero {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 112px 32px 72px;
+}
+
+.guides-hero h1 {
+  font-size: 60px;
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+  font-weight: 700;
+  margin: 0 0 24px;
+  max-width: 720px;
+}
+
+.guides-hero .lede {
+  font-size: 19px;
+  line-height: 1.58;
+  color: var(--muted);
+  margin: 0 0 36px;
+  max-width: 600px;
+}
+
+/* ── Featured guide ───────────────────────────── */
+
+.featured-section {
+  border-top: 1px solid var(--line-2);
+  background: var(--surface);
+  padding: 80px 32px;
+}
+
+.featured-inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+.featured-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: center;
+}
+
+.featured-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--accent);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+.featured-h2 {
+  font-size: 36px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.18;
+  color: var(--ink);
+  max-width: 480px;
+  margin-bottom: 18px;
+}
+
+.featured-body {
+  font-size: 16px;
+  color: var(--muted);
+  line-height: 1.65;
+  margin-bottom: 24px;
+}
+
+.featured-bullets {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0 0 32px;
+  padding: 0;
+}
+
+.featured-bullets li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.bullet-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+
+.btn-featured {
+  display: inline-flex;
+  align-items: center;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-soft);
+  padding: 12px 24px;
+  border-radius: 10px;
+  transition: background 0.15s, transform 0.15s;
+}
+
+.btn-featured:hover {
+  background: #cce3d7;
+  transform: translateY(-1px);
+}
+
+/* ── Guide grid ───────────────────────────────── */
+
+.guides-section {
+  background: var(--bg);
+  padding: 80px 32px;
+}
+
+.guides-section-inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+.guides-section-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 32px;
+}
+
+.guides-section-heading {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--ink);
+}
+
+.guides-section-count {
+  font-size: 12px;
+  color: #c0bdb3;
+}
+
+.guides-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.guide-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 28px 32px;
+  display: flex;
+  flex-direction: column;
+  color: inherit;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+
+.guide-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(28, 27, 24, 0.08);
+  border-color: #d0cdc6;
+  color: inherit;
+}
+
+.guide-card-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.guide-card .icon-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.guide-card .icon-badge--green { background: var(--accent-soft); color: var(--accent); }
+.guide-card .icon-badge--blue { background: #DDEAF6; color: #1A5FA8; }
+.guide-card .icon-badge--amber { background: #FEF3DB; color: #A05C00; }
+.guide-card .icon-badge--plum { background: #EDE0F5; color: #6B3A8C; }
+
+.difficulty-pill {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.difficulty-pill--beginner { background: var(--accent-soft); color: var(--accent); }
+.difficulty-pill--intermediate { background: #FEF3DB; color: #A05C00; }
+.difficulty-pill--advanced { background: #DDEAF6; color: #1A5FA8; }
+
+.guide-card-title {
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+  line-height: 1.25;
+  margin-bottom: 10px;
+}
+
+.guide-card-excerpt {
+  font-size: 14.5px;
+  color: var(--muted);
+  line-height: 1.6;
+  flex: 1;
+  margin: 0 0 20px;
+}
+
+.guide-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 16px;
+  border-top: 1px solid var(--line-2);
+}
+
+.guide-card-time {
+  font-size: 12px;
+  color: var(--soft);
+}
+
+.guide-card-link {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+/* ── Responsive ───────────────────────────────── */
+
+@media (max-width: 1024px) {
+  .featured-card {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .guides-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .guides-hero { padding: 80px 24px 56px; }
+  .guides-hero h1 { font-size: 42px; }
+  .guides-hero .lede { font-size: 17px; }
+  .guides-grid { grid-template-columns: 1fr; }
+  .featured-h2 { font-size: 28px; }
+}
+
+.guides-hero {
+  max-width: var(--page-width);
+  padding: 126px 28px 72px;
+}
+
+.guides-hero h1,
+.featured-h2,
+.guides-section-heading,
+.guide-card-title {
+  font-weight: 400;
+}
+
+.guides-hero h1 {
+  max-width: 760px;
+  font-size: clamp(2.9rem, 6.6vw, 5.4rem);
+  line-height: 0.98;
+}
+
+.guides-hero .lede {
+  max-width: 56ch;
+  color: var(--ink-soft);
+  font-size: clamp(1.05rem, 1.5vw, 1.22rem);
+}
+
+.featured-section,
+.guides-section {
+  border-top-color: var(--line);
+}
+
+.featured-section {
+  padding: 72px 28px;
+}
+
+.featured-inner,
+.guides-section-inner {
+  max-width: var(--page-width);
+}
+
+.featured-card {
+  grid-template-columns: minmax(0, 7fr) minmax(280px, 5fr);
+  gap: 34px;
+}
+
+.featured-label,
+.guide-card-link {
+  color: var(--accent-text);
+}
+
+.featured-h2 {
+  max-width: 560px;
+  font-size: clamp(2rem, 4.4vw, 3.35rem);
+  line-height: 1.09;
+}
+
+.featured-body,
+.featured-bullets li,
+.guide-card-excerpt {
+  color: var(--ink-soft);
+}
+
+.featured-bullets {
+  gap: 8px;
+}
+
+.bullet-dot {
+  background: var(--accent);
+}
+
+.btn-featured {
+  border: 1px solid var(--accent-soft);
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent-text);
+  font-family: var(--mono);
+  font-size: 11.5px;
+}
+
+.btn-featured:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.guides-section {
+  background: var(--paper);
+  padding: 80px 28px 96px;
+}
+
+.guides-section-header {
+  margin-bottom: 32px;
+}
+
+.guides-grid {
+  gap: 20px;
+}
+
+.guide-card {
+  border-color: var(--line);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--small-shadow);
+}
+
+.guide-card:hover {
+  border-color: var(--accent);
+  box-shadow: var(--page-shadow);
+}
+
+.guide-card .icon-badge {
+  border-radius: 9px;
+}
+
+.guide-card .icon-badge--green,
+.difficulty-pill--beginner {
+  background: var(--accent-soft);
+  color: var(--accent-text);
+}
+
+.guide-card .icon-badge--blue,
+.difficulty-pill--advanced {
+  background: var(--green-soft);
+  color: var(--green-text);
+}
+
+.guide-card .icon-badge--amber,
+.difficulty-pill--intermediate {
+  background: var(--amber-soft);
+  color: var(--amber-text);
+}
+
+.guide-card .icon-badge--plum {
+  background: var(--paper-deep);
+  color: var(--muted);
+}
+
+.difficulty-pill {
+  border: 1px solid transparent;
+}
+
+.guide-card-footer {
+  border-top-color: var(--line-soft);
+}
+
+@media (max-width: 1024px) {
+  .featured-card {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .guides-hero,
+  .featured-section,
+  .guides-section {
+    padding-inline: 20px;
+  }
+
+  .guides-hero {
+    padding-top: 126px;
+  }
+}
+
+.meta-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 48px;
+}
+
+.guide-read-time {
+  color: var(--faint);
+  font-size: 12px;
+}
+
+@media (max-width: 480px) {
+  .guides-hero,
+  .featured-section,
+  .guides-section {
+    padding-inline: 16px;
+  }
+}

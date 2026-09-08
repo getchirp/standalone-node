@@ -1,0 +1,77 @@
+---
+title: "From script to platform"
+description: "Chirp started as a Node scaffolding script. The four-stage evolution that shaped the product, and the lesson each stage taught us."
+date: 2026-05-06
+category: product
+author: Chirp Team
+tags: [origin-story, architecture, evolution]
+---
+import ScaffoldFlowTerminal from "../../components/posts/ScaffoldFlowTerminal.astro";
+import ChirpTuiDemo from "../../components/posts/ChirpTuiDemo.astro";
+import ChirpSidecarEvolutionDemo from "../../components/posts/ChirpSidecarEvolutionDemo.astro";
+import ChirpAstroIntegrationDemo from "../../components/posts/ChirpAstroIntegrationDemo.astro";
+
+Every product has an origin story that sounds cleaner in retrospect than it was in practice. Here's Chirp's - not the polished version, but the actual sequence of working tools that each taught us what the next one had to become.
+
+## Stage 1: A scaffolding script (January 2025)
+
+It started as a Node.js script. Given an Astro content collection schema (200+ fields across a dozen content types), the script generated sample markdown files, validated them against the schema, and reported errors. It was 300 lines of code and ran in under a second.
+
+The script had to read and understand the Zod schemas to do its job. That turned out to be the insight that carried through every subsequent stage: **if software understands the schema, it can generate the editing experience.**
+
+<ScaffoldFlowTerminal
+  collection="plants"
+  collectionCount={3}
+  fieldCount={26}
+/>
+
+<br/>
+**Lesson:** Separate schema from tooling. The schema is the durable artifact; everything else is derivative.
+
+## Stage 2: CLI prototype (March 2025)
+
+The script became a CLI. `swyft init` read your content collections and generated a local editing interface - a simple web UI served on localhost, with form fields for each schema property, basic validation, and a file browser for existing content.
+
+The CLI was ugly but functional. It proved two things: that schema-driven editing worked in practice, and that Astro could stay the single source of truth. No duplicate schemas, no parallel configuration, no sync issues.
+
+<ChirpTuiDemo />
+
+
+**Lesson:** Don't duplicate configuration. If the schema already lives in the Astro project, read it from there. Every copy is a future inconsistency.
+
+## Stage 3: Local Go application (July 2025)
+
+The CLI was rewritten in Go. The reasons were practical: Go compiles to a single binary (no Node.js dependency for editors), starts instantly, and has excellent filesystem watching primitives.
+
+The Go app ran as a sidecar - a separate process alongside the Astro dev server. It watched the content directory, served a web-based editing UI, and wrote changes directly to markdown files. The Astro project itself had no idea the editor existed.
+
+<ChirpSidecarEvolutionDemo />
+
+This was the architecture that stuck. A sidecar app means:
+
+- No SSR requirement for the editing experience
+- No changes to the Astro project's dependencies or build
+- The editor can be upgraded independently of the site
+- The published site has zero runtime impact from editing
+
+**Lesson:** The editor adapts to the project, not the other way around. Your Astro site shouldn't change shape because you added an editing tool.
+
+## Stage 4: Astro native (November 2025–present)
+
+Stage 4 isn't a rewrite - it's a distribution model. The Go app now ships as an npm package that installs as a dev dependency. You add `@Chirp` to your Astro project, and it runs in one of two modes:
+
+<ChirpAstroIntegrationDemo />
+
+**Local-only.** The sidecar starts alongside `astro dev`. Editors access it at `localhost:4321/chirp`. Content is written to the local filesystem and committed to Git like any other change. Ideal for individuals and freelancers.
+
+**Deployable.** The sidecar runs as a companion service (or container) alongside your build pipeline. Editors access it at `edit.yoursite.com`. Changes are committed to your repo, triggering a rebuild of the static site. Ideal for teams.
+
+In both modes, the architecture is the same: sidecar watches files, serves editing UI, writes changes. The Astro site never knows the editor is there.
+
+**Lesson:** Great tools don't demand attention. They work alongside your existing workflow without forcing you to reorganize around them.
+
+## What didn't change
+
+Across all four stages, one thing stayed constant: the schema is the source of truth. The editing UI, the validation, the documentation, the AI prompts - all derived from the same Zod schemas that define your content types. Nothing is duplicated. Nothing is asked twice.
+
+Stage 4 is where we are now. There will be a Stage 5. But the architecture (sidecar, schema-driven, zero runtime impact) has proven durable across three rewrites and hundreds of user sessions. Some decisions earn their permanence.

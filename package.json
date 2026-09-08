@@ -1,0 +1,32 @@
+{
+  "name": "chirp.md",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "packageManager": "pnpm@11.10.0",
+  "scripts": {
+    "dev": "astro dev",
+    "preview": "astro preview",
+    "build": "ASTRO_TELEMETRY_DISABLED=1 astro build",
+    "audit:dependencies": "pnpm audit --prod --audit-level high",
+    "verify:headers": "node scripts/verify-headers.mjs"
+  },
+  "dependencies": {
+    "@astrojs/markdown-satteri": "^0.3.8",
+    "@astrojs/mdx": "^7.0.5",
+    "@astrojs/node": "^11.1.3",
+    "@astrojs/rss": "^4.0.19",
+    "@astrojs/sitemap": "^3.7.3",
+    "@freshjuice/astro-webmcp": "^1.4.0",
+    "@jdevalk/astro-seo-graph": "^2.2.0",
+    "@jdevalk/seo-graph-core": "^0.7.0",
+    "astro": "7.2.0",
+    "astro-og-canvas": "^0.13.0",
+    "canvaskit-wasm": "^0.41.1",
+    "satteri": "^0.10.5",
+    "@chirp.md/chirp": "file:./vendor/chirp.md-chirp-1.0.0.tgz"
+  }
+}

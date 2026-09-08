@@ -1,0 +1,199 @@
+---
+import Base from '../layouts/Base.astro';
+import CTA from '../components/CTA.astro';
+
+import FeatureSplit from '../components/FeatureSplit.astro';
+import FeatureVisual from '../components/FeatureVisual.astro';
+import Hero from '../components/Hero.astro';
+import { getEntry } from 'astro:content';
+import { assembleGraph, buildPiece, buildWebPage, buildWebSite, makeIds } from '@jdevalk/seo-graph-core';
+
+const siteUrl = 'https://chirp.md';
+const home = await getEntry('page', '/');
+const pageTitle = home?.data.title ?? 'Your Astro content. A better way to edit it.';
+const pageDescription = home?.data.description ?? 'A local, visual markdown and mdx editor for the Astro project you already have.';
+const ids = makeIds({ siteUrl });
+
+const pageGraph = assembleGraph([
+  buildWebSite({
+    url: siteUrl,
+    name: 'Chirp',
+    description: pageDescription,
+    inLanguage: 'en',
+    publisher: { '@id': ids.organization('chirp') },
+  }, ids),
+  buildPiece({
+    '@type': 'Organization',
+    '@id': ids.organization('chirp'),
+    url: siteUrl,
+    name: 'Chirp',
+    description: 'A local visual markdown and mdx editor for Astro projects.',
+  }),
+  buildPiece({
+    '@type': 'SoftwareApplication',
+    '@id': `${siteUrl}/#software`,
+    name: 'Chirp',
+    description: pageDescription,
+    applicationCategory: 'DeveloperApplication',
+    operatingSystem: 'macOS, Linux, Windows',
+  }),
+  buildWebPage({
+    url: `${siteUrl}/`,
+    name: pageTitle,
+    description: pageDescription,
+    inLanguage: 'en',
+    isPartOf: { '@id': ids.website },
+  }, ids),
+]);
+---
+
+<Base
+  title={pageTitle}
+  description={pageDescription}
+  canonical={home?.data.canonical ?? `${siteUrl}/`}
+  ogImage={home?.data.socialImage ?? '/og/index.jpg'}
+  graph={pageGraph}
+  current="home"
+>
+  <div class="page-home">
+    <div class="home-songline" aria-hidden="true" data-home-songline>
+      <div class="home-songline-inner" data-home-songline-track></div>
+    </div>
+    <Hero song="24,13,18">
+      <h1 id="hero-title">Introducing <em>Chirp</em></h1>
+      <p class="hero-lede">
+        A lightweight visual editor for Astro. It reads your existing content collections and writes changes back to the same files. Your files, schema and git repo remain the source of truth.
+      </p>
+
+      <div slot="visual">
+        <FeatureVisual kind="editor" variant="hero" alt="The Chirp editor showing a post breadcrumb, save action, centered article canvas, word count, and keyboard shortcuts" />
+      </div>
+    </Hero>
+
+    <section class="home-section install-section" id="install" aria-labelledby="install-title" data-home-song="5,9,6">
+      <div class="wrap narrow-wrap">
+        <h2 id="install-title" class="visually-hidden">Install Chirp in one command</h2>
+        <FeatureVisual kind="terminal" alt="Terminal showing Chirp being added to an Astro project and starting locally" />
+      </div>
+    </section>
+
+    <section class="home-section repository-section" aria-labelledby="repository-title" data-home-song="9,5">
+      <div class="wrap repository-grid">
+        <FeatureVisual kind="repository" alt="An Astro repository tree with home.mdx highlighted as the file opened in Chirp" />
+        <div class="section-side-copy" data-home-reveal="true">
+          <h2 id="repository-title">A visual layer for what's already there</h2>
+          <p>Nothing is imported, uploaded or moved. Chirp reads your content configuration, maps your collections, and gets out of the way.</p>
+        </div>
+      </div>
+    </section>
+
+    <FeatureSplit
+      id="editor"
+      title="A calm canvas"
+      subheading="that speaks markdown"
+      description="Write visually; keep the source. Every block maps to a plain markdown structure - and every keystroke saves straight back to home.mdx."
+      layout="text-left"
+      bodyLayout="visual-aside"
+      song="7,11,15,19,15,11,7"
+    >
+      <FeatureVisual slot="visual" kind="editor" alt="The Chirp editor showing the One schema to rule the editor post with its breadcrumb, save action, and document status bar" />
+      <div slot="aside" class="feature-aside-content">
+        <ul class="shortcut-list">
+          <li>Command bar <kbd>⌘</kbd><kbd>K</kbd></li>
+          <li>Save to file <kbd>⌘</kbd><kbd>S</kbd></li>
+          <li>Quick open <kbd>⌘</kbd><kbd>P</kbd></li>
+          <li>Insert block <kbd>/</kbd></li>
+          <li>Find in content <kbd>⇧</kbd><kbd>⌘</kbd><kbd>F</kbd></li>
+        </ul>
+        <p class="margin-note">Add a block in editor. Click the block for its props or to remove it. The drawer holds the frontmatter. <b>⌘S</b> saves to the file.</p>
+      </div>
+    </FeatureSplit>
+
+    <FeatureSplit
+      id="components"
+      title="Give your components a visual interface"
+      description="Map your existing Astro components into Chirp and they become visual blocks with a proper inspector."
+      layout="text-right"
+      song="11,5,13,5,11"
+    >
+      <FeatureVisual slot="visual" kind="components" alt="A custom CtaPair Astro component beside its live props inspector and clean mdx output" />
+    </FeatureSplit>
+
+    <section class="feature-section schema-section" id="schema" aria-labelledby="schema-title" data-home-song="1,3,6,9">
+      <div class="wrap schema-layout">
+        <div class="schema-copy" data-home-reveal="true">
+          <h2 id="schema-title">Sensible defaults. Refinements when you want them.</h2>
+          <p>Chirp reads <code>src/content.config.ts</code> directly and every zod type already implies a control. Using zods <code>.describe()</code> layers on a refinement - a radio group, searchable picker, inline tags textarea or currency. It's plain zod either way and compatibility never depends on it.</p>
+        </div>
+        <FeatureVisual kind="schema" alt="A zod content schema beside the form controls Chirp infers from it" />
+        <div class="schema-notes" data-home-reveal="true">
+          <p class="schema-response">Your schema defines the data. <b><em>.describe()</em> describes the editing experience.</b></p>
+        </div>
+      </div>
+    </section>
+
+    <FeatureSplit
+      id="collections"
+      title="Every entry, easy to scan -"
+      subheading="still just files"
+      description="Your content configuration becomes a working table. Sort it, filter it, search it - then close it and everything's where you left it."
+      layout="stacked"
+      song="4,8,4,8,4,8,4"
+    >
+      <FeatureVisual slot="visual" kind="collections" alt="The Chirp Posts collection with filter, column and sort controls plus title, description, date, category, author and tag columns" />
+    </FeatureSplit>
+
+    <FeatureSplit
+      id="media"
+      title="A media library that lives in the project"
+      description="Browse, search and preview the assets your site already uses, add them to a post while you write. Files stay on disk."
+      layout="text-left"
+      song="15,7,11,9"
+    >
+      <FeatureVisual slot="visual" kind="media" alt="A local media library with project assets, a selected preview and an insert button" />
+      <p slot="aside" class="margin-note">A selection here is a consequence there: the markdown lands in home.mdx, the file stays in src/images/.</p>
+    </FeatureSplit>
+
+    <section class="home-section local-section" id="local" aria-labelledby="local-title" data-home-song="9,13,17,21,13">
+      <div class="wrap">
+        <div class="section-heading-grid" data-home-reveal="true">
+          <div>
+            <h2 id="local-title">Nothing crosses the wire</h2>
+          </div>
+          <p class="section-lede">Chirp runs on your machine, against your files. No account, no database, no dashboard. No internet required.</p>
+        </div>
+        <div class="local-visual-wrap" data-home-reveal="true">
+          <FeatureVisual kind="local" alt="Local network panel and git diff showing Chirp making changes only inside the project" />
+        </div>
+      </div>
+    </section>
+
+    <section class="home-section whisper-section" id="story" aria-label="Compatibility and future plans" data-home-song="4,2,3,6,4">
+      <div class="wrap">
+        <div class="whisper-grid" data-home-reveal="true">
+          <div class="whisper-column">
+            <h3>Tested on real Astro projects</h3>
+            <p>astro.build's, withastro/docs and twenty-plus free themes - each with different schemas, folder layouts and content patterns. Compatibility means reading the project's own configuration and writing valid source back; if Chirp meets a structure it doesn't understand, it says so and leaves the file alone.</p>
+          </div>
+          <div class="whisper-column">
+            <h3>Designed to grow</h3>
+            <p>New capabilities arrive as plugins, around a core that stays small. None of them are required.</p>
+            <p>git &amp; deployment adapters, media &amp; cdn providers, block libraries, revisions, seo, hosted &amp; team</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="home-section closing-section" id="get" aria-labelledby="closing-title">
+      <div class="wrap closing-inner">
+        <div class="song-visual" aria-hidden="true" data-home-song-target></div>
+        <h2 id="closing-title" data-home-reveal="true">One local dependancy</h2>
+        <p data-home-reveal="true">Add Chirp to the Astro repository you already have. Your content stays in git, your schema stays authoritative and nothing ever touches production.</p>
+        <div data-home-reveal="true"><CTA command="pnpm astro add chirp" variant="console" /></div>
+        <FeatureVisual kind="published" alt="The final home.mdx document rendered by the Astro site after editing in Chirp" />
+        <p class="closing-meta" data-home-reveal="true">plugins foundation / still a draft / no account / no setup beyond the command above</p>
+      </div>
+    </section>
+  </div>
+  <script src="../scripts/home-loader.ts"></script>
+</Base>

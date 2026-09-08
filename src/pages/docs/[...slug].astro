@@ -1,0 +1,169 @@
+---
+import Base from '../../layouts/Base.astro';
+import '../../styles/docs.css';
+import { sidebar } from '../../data/sidebar';
+import { getCollection, render } from 'astro:content';
+import { makeIds, assembleGraph, buildPiece } from '@jdevalk/seo-graph-core';
+import { buildWebSite, buildWebPage } from '@jdevalk/seo-graph-core';
+
+export async function getStaticPaths() {
+  const docs = await getCollection('doc');
+  return docs.map((doc) => ({ params: { slug: doc.id }, props: { doc } }));
+}
+
+const { doc } = Astro.props;
+const { Content } = await render(doc);
+
+const { title, description } = doc.data;
+const siteUrl = 'https://chirp.md';
+const pageUrl = `${siteUrl}/docs/${doc.id}`;
+const ids = makeIds({ siteUrl });
+
+const pageGraph = assembleGraph([
+  buildWebSite({ url: siteUrl, name: 'Chirp', description: 'A local visual editor for Astro content collections.', inLanguage: 'en' }, ids),
+  buildPiece({ '@type': 'Organization', url: siteUrl, name: 'Chirp', description: 'A local visual editor for Astro content collections.' }),
+  buildWebPage({ url: pageUrl, name: `${title} - Chirp Docs`, description: description || title, inLanguage: 'en' }, ids),
+]);
+
+/** Build breadcrumb from slug segments */
+function buildBreadcrumb(slug: string) {
+  const segments = slug.split('/');
+  const crumbs = [{ label: 'Docs', href: '/docs' }];
+  let path = '';
+  for (let i = 0; i < segments.length - 1; i++) {
+    path += '/' + segments[i];
+    crumbs.push({ label: segments[i].replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()), href: null });
+  }
+  crumbs.push({ label: title, href: null });
+  return crumbs;
+}
+
+const breadcrumbs = buildBreadcrumb(doc.id);
+
+/** Build TOC from a simple regex - real impl would use remark */
+function extractHeadings(raw: string): { id: string; text: string }[] {
+  const re = /^#{2,3}\s+(.+)$/gm;
+  const headings: { id: string; text: string }[] = [];
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(raw)) !== null) {
+    const text = m[1];
+    const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    headings.push({ id, text });
+  }
+  return headings.slice(0, 8);
+}
+
+const toc = extractHeadings(doc.body || '');
+
+/** Find which sidebar item matches this slug */
+function findSidebarParent(slug: string) {
+  for (const group of sidebar) {
+    for (const item of group.items) {
+      const itemSlug = item.href.replace('/docs/', '');
+      if (itemSlug === slug) return { group: group.label, items: group.items };
+    }
+  }
+  return null;
+}
+
+const parent = findSidebarParent(doc.id);
+
+/** Find next/prev in sidebar */
+function findAdjacent(slug: string) {
+  const flat: { label: string; href: string }[] = [];
+  for (const g of sidebar) for (const i of g.items) flat.push(i);
+  const idx = flat.findIndex((i) => i.href.replace('/docs/', '') === slug);
+  return {
+    prev: idx > 0 ? flat[idx - 1] : null,
+    next: idx >= 0 && idx < flat.length - 1 ? flat[idx + 1] : null,
+  };
+}
+
+const adjacent = findAdjacent(doc.id);
+---
+
+
+<Base title={`${title} - Chirp Documentation`} description={description || title} ogImage={`/og/docs/${doc.id}.jpg`} current="docs">
+  <!-- 3-col layout -->
+  <div class="doc-layout">
+
+    <!-- Sidebar -->
+    <aside class="doc-sidebar" aria-label="Documentation sidebar">
+      <a class="doc-sidebar__back" href="/docs">
+        <span class="arrow" aria-hidden="true">&larr;</span> Docs home
+      </a>
+      <nav aria-label="Documentation">
+        {sidebar.map((group) => (
+          <div class="sidebar-group">
+            <span class="overline">{group.label}</span>
+            <ul>
+              {group.items.map((item) => (
+                <li>
+                  <a href={item.href} aria-current={item.href === `/docs/${doc.id}` ? 'page' : undefined}>
+                    {item.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </nav>
+    </aside>
+
+    <!-- Article -->
+    <main class="doc-article" id="main">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ol>
+          {breadcrumbs.map((crumb, i) => (
+            <li>
+              {crumb.href
+                ? <a href={crumb.href}>{crumb.label}</a>
+                : <span aria-current="page">{crumb.label}</span>
+              }
+            </li>
+          ))}
+        </ol>
+      </nav>
+
+      <article aria-labelledby="doc-article-title">
+        <h1 id="doc-article-title">{title}</h1>
+        {description && <p class="lede">{description}</p>}
+        <Content />
+
+        {adjacent.next && (
+          <a class="next-card" href={adjacent.next.href}>
+            <span>
+              <span class="overline">Next</span>
+              <span class="next-card__title">{adjacent.next.label}</span>
+            </span>
+            <span class="arrow" aria-hidden="true">&rarr;</span>
+          </a>
+        )}
+
+        <footer class="doc-article__meta">
+          <span>Last updated <time datetime="2026-07-04">Jul 04, 2026</time></span>
+          <span>Edit the source file in your project</span>
+        </footer>
+      </article>
+    </main>
+
+    <!-- TOC -->
+    {toc.length > 0 && (
+      <nav class="doc-toc" aria-label="On this page">
+        <span class="overline">On this page</span>
+        <ul>
+          {toc.map((h) => (
+            <li><a href={`#${h.id}`}>{h.text}</a></li>
+          ))}
+        </ul>
+      </nav>
+    )}
+
+  </div>
+</Base>
+
+<svg style="display:none" aria-hidden="true">
+  <defs>
+    <symbol id="icon-info" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 7.5 V11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="5" r="0.9" fill="currentColor"/></symbol>
+  </defs>
+</svg>

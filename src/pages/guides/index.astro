@@ -1,0 +1,97 @@
+---
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import SubscribeBlock from '../../components/SubscribeBlock.astro';
+import '../../styles/blog.css';
+import '../../styles/docs.css';
+import '../../styles/guides.css';
+import { makeIds, assembleGraph, buildPiece } from '@jdevalk/seo-graph-core';
+import { buildWebSite, buildWebPage } from '@jdevalk/seo-graph-core';
+import { getCollection } from 'astro:content';
+
+const siteUrl = 'https://chirp.md';
+const pageUrl = siteUrl + '/guides';
+const ids = makeIds({ siteUrl });
+
+const pageGraph = assembleGraph([
+  buildWebSite({ url: siteUrl, name: 'Chirp', description: 'A local visual editor for Astro content collections.', inLanguage: 'en' }, ids),
+  buildPiece({ '@type': 'Organization', url: siteUrl, name: 'Chirp', description: 'A local visual editor for Astro content collections.' }),
+  buildWebPage({ url: pageUrl, name: 'Guides - Chirp', description: 'Step-by-step guides for installing and using the local Astro content editor.', inLanguage: 'en' }, ids),
+]);
+
+const allGuides = await getCollection('guide');
+allGuides.sort((a, b) => a.data.order - b.data.order);
+
+const featured = allGuides.find((g) => g.data.featured) ?? allGuides[0];
+const rest = allGuides.filter((g) => g.id !== featured.id);
+
+const sections = [...new Set(allGuides.map((g) => g.data.section))];
+---
+
+
+<Base title="Guides - learn by doing" description="Step-by-step guides for installing and using the local Astro content editor." ogImage="/og/guides.jpg" graph={pageGraph} current="guides">
+  <header class="guides-hero" aria-labelledby="guides-title">
+    <div class="eyebrow">Guides</div>
+    <h1 id="guides-title">Learn by doing.</h1>
+    <p class="lede">Step-by-step guides for installing Chirp, defining content schemas, and editing local Markdown and mdx files.</p>
+    <nav class="blog-filters" aria-label="Filter by section">
+      <a class="blog-filter-pill active" href="/guides" aria-current="true">All</a>
+      {sections.map((section) => (
+        <a class="blog-filter-pill" href={`/guides#${section.toLowerCase().replace(/\s+/g, '-')}`}>{section}</a>
+      ))}
+    </nav>
+  </header>
+
+  <section class="featured-section" aria-labelledby="featured-guide-title">
+    <div class="featured-inner">
+      <div class="featured-card">
+        <div>
+          <p class="featured-label mono">Start Here</p>
+          <h2 class="featured-h2" id="featured-guide-title">Install Chirp and open your local editor.</h2>
+          <p class="featured-body">Add the development dependency, start Astro, and open `/admin` to edit the files in your project.</p>
+          <ul class="featured-bullets">
+            <li><span class="bullet-dot"></span>One Astro integration</li>
+            <li><span class="bullet-dot"></span>No runtime impact on your site</li>
+            <li><span class="bullet-dot"></span>Your schema, your editor</li>
+          </ul>
+          <a href={`/guides/${featured.id}`} class="btn-featured">Start the guide →</a>
+        </div>
+        <div class="terminal" role="img" aria-label="Terminal showing installation commands">
+          <div class="terminal__dots" aria-hidden="true"><span></span><span></span><span></span></div>
+          <pre aria-hidden="true"><code><span class="code-prompt">$</span> pnpm add -D chirp
+<span class="code-prompt">$</span> pnpm dev
+<span class="code-ok">✓</span> Chirp running at localhost:4321/admin</code></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="guides-section" aria-label="All guides">
+    <div class="guides-section-inner">
+      <div class="guides-section-header">
+        <h2 class="guides-section-heading">All guides</h2>
+        <span class="guides-section-count mono">Showing {allGuides.length} guides</span>
+      </div>
+      <div class="guides-grid">
+        {rest.map((guide) => (
+          <a href={`/guides/${guide.id}`} class="guide-card">
+            <div class="guide-card-top-row">
+              <span class={`icon-badge icon-badge--${guide.data.color}`} aria-hidden="true">
+                <Icon name={guide.data.icon} size={17} />
+              </span>
+              <span class={`difficulty-pill difficulty-pill--${guide.data.difficulty}`}>{guide.data.difficulty}</span>
+            </div>
+            <h3 class="guide-card-title">{guide.data.title}</h3>
+            <p class="guide-card-excerpt">{guide.data.description}</p>
+            <div class="guide-card-footer">
+              <span class="guide-card-time mono">{guide.data.readTime}</span>
+              <span class="guide-card-link">Read guide →</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <SubscribeBlock />
+</Base>

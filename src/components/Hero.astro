@@ -1,0 +1,25 @@
+---
+interface Props {
+  caption?: string;
+  song?: string;
+}
+
+const { caption, song = '24,13,18' } = Astro.props;
+---
+
+<section class="hero-block" aria-labelledby="hero-title" data-home-song={song}>
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <div class="hero-copy-content">
+        <slot />
+      </div>
+    </div>
+    <div class="hero-visual" data-home-reveal="true">
+      <slot name="visual" />
+    </div>
+  </div>
+  <div class="hero-notes wrap" data-home-reveal="true">
+    <slot name="notes" />
+  </div>
+  {caption && <p class="hero-caption wrap">{caption}</p>}
+</section>

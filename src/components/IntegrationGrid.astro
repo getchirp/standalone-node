@@ -1,0 +1,31 @@
+---
+interface IntegrationItem {
+  name: string;
+  description: string;
+  href?: string;
+  status: 'tested' | 'planned';
+  note?: string;
+}
+
+interface Props {
+  items: IntegrationItem[];
+}
+
+const { items } = Astro.props;
+---
+
+<ul class="integration-grid" aria-label="Compatibility integrations">
+  {items.map((item) => (
+    <li class:list={['integration-item', `integration-${item.status}`]}>
+      <div class="integration-mark" aria-hidden="true">{item.status === 'tested' ? '✓' : '·'}</div>
+      <div>
+        <div class="integration-name">
+          {item.href ? <a href={item.href}>{item.name}</a> : item.name}
+          <span>{item.status === 'tested' ? 'tested' : 'planned'}</span>
+        </div>
+        <p>{item.description}</p>
+        {item.note && <small>{item.note}</small>}
+      </div>
+    </li>
+  ))}
+</ul>

@@ -1,0 +1,449 @@
+.story-hero {
+  padding: 120px 0 96px;
+}
+
+.story-hero-copy {
+  max-width: 760px;
+}
+
+.story-hero h1 {
+  margin-bottom: 28px;
+  font-size: clamp(3.35rem, 4vw + 1.8rem, 60px);
+  line-height: 1.04;
+}
+
+.story-hero p {
+  font-size: 20px;
+  line-height: 1.65;
+  color: var(--muted);
+}
+
+.page-story .hero-actions {
+  justify-content: center;
+}
+
+/* ── Timeline chapters ─────────────────────────── */
+
+.story-timeline-shell {
+  padding: 96px 0 112px;
+}
+
+.story-timeline {
+  max-width: 880px;
+  margin: 0 auto;
+}
+
+.timeline-row {
+  display: grid;
+  grid-template-columns: 160px minmax(0, 1fr);
+  gap: 48px;
+  padding: 56px 0;
+  border-bottom: 1px solid var(--line-2);
+}
+
+.timeline-num {
+  margin-bottom: 10px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.timeline-era {
+  font-size: 11px;
+  line-height: 1.7;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.timeline-content h2 {
+  margin-bottom: 14px;
+  font-size: 26px;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.timeline-content p {
+  max-width: 620px;
+  margin-bottom: 24px;
+  font-size: 16.5px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+
+.timeline-lesson {
+  display: flex;
+  gap: 14px;
+  align-items: baseline;
+}
+
+.timeline-lesson span {
+  flex-shrink: 0;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.timeline-lesson strong {
+  font-size: 19px;
+  line-height: 1.45;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+/* ── Dark band ─────────────────────────────────── */
+
+.story-dark-band {
+  border-top: 1px solid var(--line-2);
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.story-dark-copy {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 112px 0;
+}
+
+.story-dark-band .eyebrow {
+  color: #b8b5ab;
+}
+
+.story-dark-copy h2 {
+  margin-bottom: 28px;
+  color: var(--bg);
+  font-size: clamp(2.4rem, 3vw + 1.4rem, 40px);
+  line-height: 1.12;
+}
+
+.story-dark-copy p {
+  margin-bottom: 20px;
+  color: #b8b5ab;
+  font-size: 17px;
+  line-height: 1.75;
+}
+
+.story-dark-copy p:last-child {
+  margin-bottom: 0;
+}
+
+.story-dark-emphasis {
+  margin-top: 32px;
+  color: var(--bg) !important;
+  font-size: 22px !important;
+  line-height: 1.55 !important;
+  letter-spacing: -0.015em;
+  font-weight: 500;
+}
+
+/* ── Evolution stages ──────────────────────────── */
+
+.story-section-copy {
+  max-width: 760px;
+  margin-bottom: 64px;
+}
+
+.story-section-copy h2 {
+  margin-bottom: 24px;
+}
+
+.story-section-copy p {
+  font-size: 17px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+
+.story-stage-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.story-stage-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 28px;
+  min-height: 310px;
+}
+
+.story-stage-step {
+  font-size: 12px;
+  color: var(--accent);
+}
+
+.story-stage-takeaway {
+  margin-top: auto;
+  border-top: 1px solid var(--tag);
+  padding-top: 12px;
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.story-stage-summary,
+.story-principle-summary {
+  max-width: 760px;
+  margin-top: 56px;
+  font-size: 20px;
+  line-height: 1.6;
+  letter-spacing: -0.01em;
+  font-weight: 500;
+}
+
+/* ── Principles grid ───────────────────────────── */
+
+.story-principles-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.story-principle-card {
+  display: flex;
+  align-items: baseline;
+  gap: 18px;
+  padding: 26px 28px;
+}
+
+.story-principle-card span {
+  flex-shrink: 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.story-principle-card strong {
+  font-size: 18px;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+}
+
+.story-principle-summary span {
+  color: var(--accent);
+}
+
+/* ── Closing ───────────────────────────────────── */
+
+.story-closing {
+  padding: 120px 0;
+}
+
+.story-closing-inner {
+  text-align: center;
+  padding: 0;
+}
+
+.story-closing-inner img {
+  margin: 0 auto 28px;
+}
+
+.story-closing-inner h2 {
+  max-width: 640px;
+  margin: 0 auto 24px;
+  font-size: clamp(2.9rem, 3vw + 1.7rem, 48px);
+  line-height: 1.08;
+}
+
+.story-closing-inner p {
+  max-width: 620px;
+  margin: 0 auto 40px;
+  font-size: 18px;
+  line-height: 1.65;
+  color: var(--muted);
+}
+
+.story-closing-inner .hero-actions {
+  justify-content: center;
+}
+
+/* ── Responsive ────────────────────────────────── */
+
+@media (max-width: 1080px) {
+  .story-stage-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .timeline-row {
+    grid-template-columns: 1fr;
+    gap: 18px;
+    padding: 40px 0;
+  }
+
+  .story-principles-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .story-hero,
+  .story-dark-copy,
+  .story-evolution,
+  .story-principles-section,
+  .story-closing {
+    padding: 76px 0;
+  }
+
+  .story-timeline-shell {
+    padding: 76px 0 76px;
+  }
+
+  .story-hero h1 {
+    font-size: clamp(2.8rem, 11vw, 3.7rem);
+  }
+
+  .story-dark-copy h2,
+  .story-closing-inner h2 {
+    font-size: clamp(2.2rem, 8vw, 3rem);
+  }
+
+  .story-stage-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .story-stage-summary,
+  .story-principle-summary {
+    font-size: 18px;
+  }
+}
+
+.page-story .story-hero {
+  padding: 126px 0 104px;
+}
+
+.page-story .story-hero h1,
+.page-story .story-dark-copy h2,
+.page-story .story-closing-inner h2 {
+  font-weight: 400;
+}
+
+.page-story .story-hero h1 {
+  max-width: 760px;
+  font-size: clamp(2.9rem, 6.6vw, 5.4rem);
+  line-height: 0.98;
+}
+
+.page-story .story-hero p {
+  max-width: 56ch;
+  color: var(--ink-soft);
+  font-size: clamp(1.05rem, 1.5vw, 1.22rem);
+}
+
+.page-story .story-timeline-section,
+.page-story .story-evolution,
+.page-story .story-principles-section,
+.page-story .story-closing {
+  border-top-color: var(--line);
+  background: transparent;
+}
+
+.page-story .story-timeline-shell {
+  padding: 96px 28px 112px;
+}
+
+.page-story .timeline-row {
+  padding: 48px 0;
+  border-bottom-color: var(--line-soft);
+}
+
+.page-story .timeline-num,
+.page-story .timeline-era,
+.page-story .timeline-lesson span,
+.page-story .story-stage-step {
+  font-family: var(--mono);
+}
+
+.page-story .timeline-num {
+  color: var(--accent-text);
+}
+
+.page-story .timeline-era,
+.page-story .timeline-content p {
+  color: var(--muted);
+}
+
+.page-story .timeline-content h2 {
+  font-size: clamp(1.7rem, 2.4vw, 2.2rem);
+}
+
+.page-story .timeline-lesson {
+  padding-top: 14px;
+  border-top: 1px dashed var(--line);
+}
+
+.page-story .timeline-lesson span,
+.page-story .story-stage-step,
+.page-story .story-principle-summary span {
+  color: var(--accent-text);
+}
+
+.page-story .story-dark-band {
+  border-top-color: var(--dark-line);
+  background: var(--dark);
+}
+
+.page-story .story-dark-band .eyebrow {
+  color: var(--dark-muted);
+}
+
+.page-story .story-dark-copy p {
+  color: var(--dark-muted);
+}
+
+.page-story .story-dark-copy h2,
+.page-story .story-dark-emphasis {
+  color: var(--paper) !important;
+}
+
+.page-story .story-stage-grid,
+.page-story .story-principles-grid {
+  gap: 20px;
+}
+
+.page-story .story-stage-card,
+.page-story .story-principle-card {
+  border-radius: var(--radius);
+  border-color: var(--line);
+  box-shadow: var(--small-shadow);
+}
+
+.page-story .story-stage-card {
+  gap: 16px;
+  min-height: 290px;
+  padding: 24px;
+}
+
+.page-story .story-stage-takeaway {
+  border-top-color: var(--line-soft);
+  color: var(--ink-soft);
+}
+
+.page-story .story-principle-card {
+  padding: 22px 24px;
+}
+
+.page-story .story-closing {
+  padding: 112px 0;
+}
+
+@media (max-width: 720px) {
+  .page-story .story-hero {
+    padding-top: 126px;
+  }
+
+  .page-story .story-timeline-shell {
+    padding-inline: 20px;
+  }
+
+  .page-story .story-closing {
+    padding: 76px 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-story .story-timeline-shell {
+    padding-inline: 16px;
+  }
+}

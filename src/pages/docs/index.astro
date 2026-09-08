@@ -1,0 +1,113 @@
+---
+import Base from '../../layouts/Base.astro';
+import '../../styles/docs.css';
+import { sidebar } from '../../data/sidebar';
+import { makeIds, assembleGraph, buildPiece } from '@jdevalk/seo-graph-core';
+import { buildWebSite, buildWebPage } from '@jdevalk/seo-graph-core';
+
+const siteUrl = 'https://chirp.md';
+const pageUrl = siteUrl + '/docs';
+const ids = makeIds({ siteUrl });
+
+const pageGraph = assembleGraph([
+  buildWebSite({ url: siteUrl, name: 'Chirp', description: 'A local visual editor for Astro content collections.', inLanguage: 'en' }, ids),
+  buildPiece({ '@type': 'Organization', url: siteUrl, name: 'Chirp', description: 'A local visual editor for Astro content collections.' }),
+  buildWebPage({ url: pageUrl, name: 'Documentation - Chirp', description: 'Install and use the local Astro editor, configure schema-driven fields, manage taxonomies, and save content safely.', inLanguage: 'en' }, ids),
+]);
+
+const sections = [
+  { title: 'Getting started', desc: 'Install Chirp, open the local editor, update or remove it, and understand the files it uses.', icon: 'rocket', color: 'green', links: [{ label: 'Installation', href: '/docs/getting-started/installation' }, { label: 'Update or remove Chirp', href: '/docs/getting-started/update-remove' }, { label: 'Project structure', href: '/docs/getting-started/project-structure' }, { label: 'Your first edit', href: '/docs/getting-started/your-first-edit' }, { label: 'Local-only mode', href: '/docs/getting-started/local-only' }] },
+  { title: 'Content & schemas', desc: 'Use Astro loaders, Zod fields, .describe() attributes, and YAML-backed taxonomies.', icon: 'schema', color: 'blue', links: [{ label: 'Astro content collections', href: '/docs/content/collections' }, { label: 'Field types', href: '/docs/content/field-types' }, { label: 'Describe field attributes', href: '/docs/content/describe-attributes' }, { label: 'Taxonomies in YAML', href: '/docs/content/taxonomies' }, { label: 'Validation and limits', href: '/docs/content/validation' }] },
+  { title: 'Using the editor', desc: 'Find content, edit Markdown and mdx, use the keyboard, save files, and manage local media.', icon: 'editor', color: 'amber', links: [{ label: 'Editing basics', href: '/docs/editor/basics' }, { label: 'Command palette and shortcuts', href: '/docs/editor/navigation' }, { label: 'Saving and conflicts', href: '/docs/editor/saving' }, { label: 'Media library', href: '/docs/editor/media-library' }] },
+];
+---
+
+
+<Base title="Documentation - the Chirp docs" description="Install and use the local Astro editor, configure schema-driven fields, manage taxonomies, and save content safely." ogImage="/og/docs.jpg" current="docs">
+  <main id="main">
+
+    <section class="docs-hero" aria-labelledby="docs-title">
+      <div class="docs-hero__inner">
+        <h1 id="docs-title">Documentation</h1>
+        <p>Install and use the local Astro editor, configure schema-driven fields, manage taxonomies, and save content safely.</p>
+        <div class="docs-search docs-search-unavailable" role="search" aria-label="Documentation search (coming soon)">
+            <svg class="icon" width="16" height="16" aria-hidden="true"><use href="#icon-search"/></svg>
+            <label class="visually-hidden" for="docs-search-input">Search the docs</label>
+            <input type="search" id="docs-search-input" name="q" placeholder="Search coming soon…" disabled aria-disabled="true">
+            <kbd class="kbd">⌘K</kbd>
+            <span class="visually-hidden">Documentation search is not available yet.</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="quick-start" aria-labelledby="quick-start-title">
+      <div class="quick-start__card">
+        <div class="quick-start__copy">
+          <p class="overline">Quick start</p>
+          <h2 id="quick-start-title">Up and running in one command.</h2>
+          <p>Add Chirp as a dev dependency, open `/admin`, and edit the files already in your Astro project.</p>
+          <a class="arrow-link" href="/docs/getting-started/installation">Read the quick start <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        </div>
+        <div class="terminal" role="img" aria-label="Terminal showing installation commands">
+          <div class="terminal__dots" aria-hidden="true"><span></span><span></span><span></span></div>
+          <pre><code><span class="code-prompt">$</span> pnpm add -D chirp
+<span class="code-prompt">$</span> pnpm dev
+<span class="code-ok">✓</span> Chirp running at localhost:4321/admin</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <section class="docs-sections" aria-label="Documentation sections">
+      {sections.map((s) => (
+        <article class="section-card">
+          <header class="section-card__head">
+            <span class={`icon-badge icon-badge--${s.color}`} aria-hidden="true">
+              <svg class="icon" width="16" height="16"><use href={`#icon-${s.icon}`}/></svg>
+            </span>
+            <h2>{s.title}</h2>
+          </header>
+          <p>{s.desc}</p>
+          <ul>
+            {s.links.map((l) => (
+              <li><a href={l.href}>{l.label} <span class="arrow" aria-hidden="true">&rarr;</span></a></li>
+            ))}
+          </ul>
+        </article>
+      ))}
+    </section>
+
+    <section class="help-strip" aria-label="More resources">
+      <div class="help-strip__inner">
+        <button class="help-card">
+          <span class="icon-badge icon-badge--neutral" aria-hidden="true"><svg class="icon" width="16" height="16"><use href="#icon-chat"/></svg></span>
+          <span><span class="help-card__title">Community</span><span class="help-card__sub">Ask questions about local editing</span></span>
+        </button>
+        <a class="help-card" href="https://github.com/swyft" rel="noopener noreferrer" aria-label="Chirp on GitHub (opens in a new tab)">
+          <span class="icon-badge icon-badge--neutral" aria-hidden="true"><svg class="icon" width="16" height="16"><use href="#icon-github"/></svg></span>
+          <span><span class="help-card__title">GitHub</span><span class="help-card__sub">Source, issues and discussions</span></span>
+        </a>
+        <a class="help-card" href="/about">
+          <span class="icon-badge icon-badge--neutral" aria-hidden="true"><svg class="icon" width="16" height="16"><use href="#icon-info"/></svg></span>
+          <span><span class="help-card__title">About Chirp</span><span class="help-card__sub">Why the editor is local-only</span></span>
+        </a>
+      </div>
+    </section>
+
+  </main>
+</Base>
+
+<svg style="display:none" aria-hidden="true">
+  <defs>
+    <symbol id="icon-search" viewBox="0 0 16 16"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M11 11 L14.5 14.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+    <symbol id="icon-rocket" viewBox="0 0 16 16"><path d="M8 1.5 C11 3.5 12 7 11 11 L5 11 C4 7 5 3.5 8 1.5 Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M5 11 L3.5 14 M11 11 L12.5 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="6.5" r="1.4" fill="currentColor"/></symbol>
+    <symbol id="icon-schema" viewBox="0 0 16 16"><rect x="1.5" y="1.5" width="5" height="5" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="9.5" y="9.5" width="5" height="5" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M6.5 4 H12 V9.5 M9.5 12 H4 V6.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
+    <symbol id="icon-editor" viewBox="0 0 16 16"><path d="M2 12.5 L10.5 4 L12 5.5 L3.5 14 L1.5 14.5 Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 5.5 L10.5 7" stroke="currentColor" stroke-width="1.6"/></symbol>
+    <symbol id="icon-deploy" viewBox="0 0 16 16"><path d="M4.5 11 A3.5 3.5 0 0 1 5 4 A4.5 4.5 0 0 1 13.5 5.5 A3 3 0 0 1 12.5 11 Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 8 V14 M6 12 L8 14 L10 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="icon-plugin" viewBox="0 0 16 16"><path d="M6 2 V5 M10 2 V5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M3.5 5 H12.5 V8.5 A4.5 4.5 0 0 1 3.5 8.5 Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 13 V14.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+    <symbol id="icon-api" viewBox="0 0 16 16"><path d="M5.5 5 L2.5 8 L5.5 11 M10.5 5 L13.5 8 L10.5 11" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="icon-chat" viewBox="0 0 16 16"><path d="M2 3.5 C2 2.7 2.7 2 3.5 2 H12.5 C13.3 2 14 2.7 14 3.5 V9.5 C14 10.3 13.3 11 12.5 11 H6 L2.5 14 V3.5 Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
+    <symbol id="icon-github" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M5.5 14 V11.5 C5.5 10.8 5.8 10.3 6.2 10 C4.5 9.8 3 9 3 6.8 C3 6.1 3.2 5.5 3.7 5 C3.5 4.5 3.5 3.8 3.8 3.2 C4.5 3.2 5.2 3.6 5.6 4 C6.3 3.8 7.2 3.8 8 4" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></symbol>
+    <symbol id="icon-changelog" viewBox="0 0 16 16"><path d="M8 4.5 V8 L10.5 9.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+    <symbol id="icon-info" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 7.5 V11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="5" r="0.9" fill="currentColor"/></symbol>
+  </defs>
+</svg>

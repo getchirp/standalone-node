@@ -1,0 +1,100 @@
+---
+import Base from '../../../layouts/Base.astro';
+import BlogTimeline from '../../../components/BlogTimeline.astro';
+import CategoryIcon from '../../../components/CategoryIcon.astro';
+import SubscribeBlock from '../../../components/SubscribeBlock.astro';
+import '../../../styles/blog.css';
+import { getCollection, getEntry } from 'astro:content';
+import { makeIds, assembleGraph, buildPiece } from '@jdevalk/seo-graph-core';
+import { buildWebSite, buildWebPage } from '@jdevalk/seo-graph-core';
+export const prerender = true;
+export async function getStaticPaths() {
+  const categories = await getCollection('postCategories');
+  return categories.map((category) => ({
+    params: { category: category.id },
+    props: { category },
+    cacheKey: String(category.digest),
+  }));
+}
+
+const { category } = Astro.props;
+console.log(category);
+const { name, description, color } = category.data;
+
+const siteUrl = 'https://chirp.md';
+const pageUrl = `${siteUrl}/blog/${category.id}`;
+const ids = makeIds({ siteUrl });
+
+const pageGraph = assembleGraph([
+  buildWebSite({ url: siteUrl, name: 'Chirp', description: 'Modern publishing platform for teams.', inLanguage: 'en' }, ids),
+  buildPiece({ '@type': 'Organization', url: siteUrl, name: 'Chirp', description: 'Modern publishing platform for teams.' }),
+  buildWebPage({ url: pageUrl, name: `${name} category - Chirp Blog`, description: `Browse all ${name.toLowerCase()} posts from the Chirp engineering, product, and design team.`, inLanguage: 'en' }, ids),
+]);
+
+const allCategories = await getCollection('postCategories');
+
+const rawPosts = await getCollection('post', ({ data }) => !data.draft);
+const resolvedPosts = await Promise.all(
+  rawPosts.map(async (post) => {
+    const catEntry = post.data.category ? await getEntry(post.data.category) : null;
+    return { ...post, resolvedCategory: catEntry };
+  })
+);
+
+const filtered = resolvedPosts
+  .filter((p) => p.resolvedCategory?.id === category.id)
+  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+
+const years = [...new Set(filtered.map((p) => new Date(p.data.date).getFullYear()))];
+const writingSince = years.length > 0 ? `'${String(Math.min(...years)).slice(2)}` : '-';
+
+const categoryDescs: Record<string, string> = {
+  engineering: 'How Chirp is built: architecture decisions, performance work, and the trade-offs behind a zero-runtime editing platform.',
+  product: 'What Chirp does and why: product decisions, feature thinking, and how we decide what to build.',
+  releases: 'What shipped: version notes, new capabilities, and the details behind each release.',
+  philosophy: 'The principles behind the platform: how we think about software, content, and the people who publish.',
+};
+const lede = category.id || `All posts filed under ${name}.`;
+---
+
+
+<Base title={`${name} category - Chirp Blog`} description={`Browse all ${name.toLowerCase()} posts from the Chirp engineering, product, and design team.`} ogImage={`/og/categories/${category.id}.jpg`} graph={pageGraph} current="blog">
+
+  <header class="blog-hero" aria-labelledby="category-title">
+    <a class="back-link" href="/blog">
+      <span class="arrow" aria-hidden="true">&larr;</span> All posts
+    </a>
+    <div class="category-hero__row">
+      <div class="blog-hero__copy">
+        <div class="category-hero__badge">
+          <span class={`icon-badge icon-badge--lg icon-badge--${category.id}`} aria-hidden="true">
+            <CategoryIcon name={category.id as any} size={18} />
+          </span>
+          <span class="overline">Category</span>
+        </div>
+        <h1 id="category-title">{name}</h1>
+        <p class="lede">{lede}</p>
+      </div>
+      <div class="category-hero__stats">
+        <dl aria-label="Number of posts in this category"><dd>{String(filtered.length).padStart(2, '0')}</dd><dt>Posts</dt></dl>
+        <dl aria-label="Year the team started writing in this category"><dd>{writingSince}</dd><dt>Writing since</dt></dl>
+      </div>
+    </div>
+    <nav class="blog-filters" aria-label="Filter by category">
+      <a class="blog-filter-pill" href="/blog">All</a>
+      {allCategories.map((cat) => (
+        <a class="blog-filter-pill" href={`/blog/${cat.id}`} class:list={[{ active: cat.id === category.id }]} aria-current={cat.id === category.id ? 'true' : undefined}>{cat.data.name}</a>
+      ))}
+    </nav>
+  </header>
+
+  <section class="blog-timeline-section">
+    <div class="blog-timeline-shell">
+      {filtered.length > 0
+        ? <BlogTimeline posts={filtered} compact />
+        : <p style="text-align:center; color:var(--muted); padding: 64px 0;">No posts yet in this category.</p>}
+    </div>
+  </section>
+
+  <SubscribeBlock />
+</Base>

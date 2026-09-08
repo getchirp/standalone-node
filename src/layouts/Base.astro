@@ -1,0 +1,67 @@
+---
+import globalCssUrl from '../styles/global.css?url';
+import globalCss from '../styles/global.css?inline';
+import homeCss from '../styles/index.css?inline';
+import Seo from '@jdevalk/astro-seo-graph/Seo.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+  canonical?: string;
+  ogImage?: string;
+  current?: string;
+  graph?: Record<string, unknown>;
+}
+
+const {
+  title,
+  description,
+  canonical,
+  ogImage,
+  current = '',
+  graph,
+} = Astro.props;
+
+const inlineHomeCss = `${globalCss}\n${homeCss}`;
+---
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="text-scale" content="scale">
+    <meta name="theme-color" content="#f5f2e9" />
+    <link rel="icon" type="image/webp" href="/favicon.webp" />
+    <Seo
+      title={title}
+      titleTemplate="%s - Chirp"
+      description={description}
+      canonical={canonical}
+      siteName="Chirp"
+      ogImage={ogImage}
+      ogImageWidth={1200}
+      ogImageHeight={630}
+      ogImageAlt={title}
+      graph={graph}
+      extraLinks={[
+        { rel: 'sitemap', href: '/sitemap-index.xml', type: 'application/xml' },
+      ]}
+    />
+    {current === 'home' ? (
+      <style is:inline set:html={inlineHomeCss}></style>
+    ) : (
+      <link rel="stylesheet" href={globalCssUrl} />
+    )}
+  </head>
+  <body class:list={{ 'page-body-home': current === 'home' }}>
+    <a class="skip-link" href="#content">Skip to content</a>
+    <Header {current} />
+    <main id="content">
+      <slot />
+    </main>
+    <Footer {current} />
+  </body>
+</html>

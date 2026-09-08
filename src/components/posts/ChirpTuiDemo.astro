@@ -1,0 +1,1535 @@
+---
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+
+const css = String.raw`
+  [data-chirp-tui],
+  [data-chirp-tui] * {
+    box-sizing: border-box;
+  }
+
+  [data-chirp-tui] {
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    color: var(--dark-muted, #a49c87);
+    font-family: var(--mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
+  }
+
+  [data-chirp-tui] button,
+  [data-chirp-tui] input,
+  [data-chirp-tui] textarea {
+    font: inherit;
+  }
+
+  [data-chirp-tui] .ctui-terminal {
+    position: relative;
+    display: block !important;
+    width: 100% !important;
+    height: 610px;
+    min-width: 0 !important;
+    overflow: hidden;
+    margin: 0 !important;
+    border: 1px solid var(--dark-line, #453e30) !important;
+    border-radius: var(--radius, 14px) !important;
+    background: var(--dark, #242019) !important;
+    box-shadow: var(--page-shadow, 0 34px 70px -38px #2e261861) !important;
+    outline: none;
+  }
+
+  [data-chirp-tui] .ctui-terminal:focus-visible {
+    border-color: color-mix(in srgb, var(--dark-string, #d9a05f) 65%, var(--dark-line, #453e30)) !important;
+  }
+
+  [data-chirp-tui] .ctui-bar {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    height: 42px;
+    padding: 0 16px;
+    border-bottom: 1px solid var(--dark-line, #453e30);
+    background: color-mix(in srgb, var(--dark, #242019) 94%, black);
+  }
+
+  [data-chirp-tui] .ctui-dot {
+    display: block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #5d5542;
+  }
+
+  [data-chirp-tui] .ctui-title {
+    margin-left: 4px;
+    color: #8e8674;
+    font: 500 10px/1 var(--mono, ui-monospace, monospace) !important;
+    letter-spacing: .01em;
+  }
+
+  [data-chirp-tui] .ctui-restart {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    margin: 0 0 0 auto !important;
+    padding: 4px 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    color: var(--dark-ok, #a4b88a) !important;
+    font: 500 10px/1 var(--mono, ui-monospace, monospace) !important;
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, currentColor 55%, transparent);
+    text-underline-offset: 3px;
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(2px);
+    transition: opacity 180ms ease, transform 180ms ease, visibility 0s linear 180ms;
+  }
+
+  [data-chirp-tui][data-ready="true"] .ctui-restart {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0);
+    transition-delay: 80ms, 80ms, 0s;
+  }
+
+  [data-chirp-tui] .ctui-restart:hover {
+    color: #c5d4b0 !important;
+  }
+
+  [data-chirp-tui] .ctui-restart:focus-visible {
+    outline: 1px solid var(--dark-ok, #a4b88a);
+    outline-offset: 4px;
+  }
+
+  [data-chirp-tui] .ctui-body {
+    position: relative;
+    height: 568px;
+    overflow: hidden;
+    font: 500 12px/1.5 var(--mono, ui-monospace, monospace) !important;
+  }
+
+  [data-chirp-tui] .ctui-screen {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    padding: 25px 30px 18px;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(7px);
+    transition: opacity 170ms ease, transform 210ms ease, visibility 0s linear 210ms;
+  }
+
+  [data-chirp-tui] .ctui-screen.is-active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0);
+    transition-delay: 40ms, 40ms, 0s;
+  }
+
+  [data-chirp-tui] .ctui-command-line {
+    display: flex;
+    align-items: baseline;
+    min-height: 1.5em;
+    color: #e6dfcf;
+  }
+
+  [data-chirp-tui] .ctui-prompt,
+  [data-chirp-tui] .ctui-keyword {
+    color: var(--dark-keyword, #e07840);
+  }
+
+  [data-chirp-tui] .ctui-command,
+  [data-chirp-tui] .ctui-path {
+    color: #e6dfcf;
+  }
+
+  [data-chirp-tui] .ctui-brand,
+  [data-chirp-tui] .ctui-ok {
+    color: var(--dark-ok, #a4b88a);
+  }
+
+  [data-chirp-tui] .ctui-string {
+    color: var(--dark-string, #d9a05f);
+  }
+
+  [data-chirp-tui] .ctui-muted {
+    color: #817967;
+  }
+
+  [data-chirp-tui] .ctui-dim {
+    color: #6f6859;
+  }
+
+  [data-chirp-tui] .ctui-cursor {
+    display: inline-block;
+    width: .58em;
+    height: 1.18em;
+    margin-left: 2px;
+    vertical-align: -.18em;
+    background: var(--accent, #dd4c22);
+    animation: ctui-cursor 950ms steps(1) infinite;
+  }
+
+  [data-chirp-tui][data-boot="running"] .ctui-cursor,
+  [data-chirp-tui][data-boot="complete"] .ctui-cursor {
+    display: none;
+  }
+
+  [data-chirp-tui] .ctui-boot-output {
+    display: grid;
+    gap: 6px;
+    width: min(650px, 100%);
+    margin-top: 20px;
+  }
+
+  [data-chirp-tui] .ctui-boot-task {
+    display: grid;
+    grid-template-columns: 1.5em minmax(0, 1fr);
+    align-items: baseline;
+    min-height: 1.5em;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 150ms ease, transform 180ms ease;
+  }
+
+  [data-chirp-tui] .ctui-boot-task.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  [data-chirp-tui] .ctui-boot-icon {
+    color: var(--dark-string, #d9a05f);
+  }
+
+  [data-chirp-tui] .ctui-boot-task.is-running .ctui-boot-icon {
+    animation: ctui-pulse 800ms ease-in-out infinite alternate;
+  }
+
+  [data-chirp-tui] .ctui-boot-task.is-complete .ctui-boot-icon {
+    color: var(--dark-ok, #a4b88a);
+    animation: none;
+  }
+
+  [data-chirp-tui] .ctui-boot-label {
+    color: #b7ae99;
+  }
+
+  [data-chirp-tui] .ctui-boot-task.is-running .ctui-boot-label {
+    color: #e1d9c8;
+  }
+
+  [data-chirp-tui] .ctui-intro {
+    display: grid;
+    gap: 4px;
+    margin-bottom: 24px;
+  }
+
+  [data-chirp-tui] .ctui-eyebrow {
+    margin: 0 !important;
+    color: var(--dark-string, #d9a05f);
+    font: 600 11px/1.3 var(--mono, ui-monospace, monospace) !important;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+
+  [data-chirp-tui] .ctui-heading {
+    margin: 0 !important;
+    color: #eee7d9;
+    font: 600 clamp(16px, 2vw, 20px)/1.25 var(--mono, ui-monospace, monospace) !important;
+    letter-spacing: -.02em;
+  }
+
+  [data-chirp-tui] .ctui-copy {
+    max-width: 650px;
+    margin: 3px 0 0 !important;
+    color: #908876;
+    font: 500 11px/1.55 var(--mono, ui-monospace, monospace) !important;
+  }
+
+  [data-chirp-tui] .ctui-menu {
+    display: grid;
+    gap: 8px;
+    width: min(760px, 100%);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  [data-chirp-tui] .ctui-menu-button,
+  [data-chirp-tui] .ctui-list-button,
+  [data-chirp-tui] .ctui-row-button {
+    appearance: none;
+    width: 100%;
+    margin: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  [data-chirp-tui] .ctui-menu-button {
+    display: grid;
+    grid-template-columns: 1.4em minmax(0, 190px) minmax(0, 1fr);
+    align-items: baseline;
+    gap: 10px;
+    min-height: 43px;
+    padding: 10px 12px !important;
+    border: 1px solid transparent !important;
+    border-radius: 7px !important;
+  }
+
+  [data-chirp-tui] .ctui-menu-button:hover,
+  [data-chirp-tui] .ctui-menu-button.is-selected {
+    border-color: #5b4a35 !important;
+    background: #33291e !important;
+  }
+
+  [data-chirp-tui] .ctui-selector {
+    color: transparent;
+  }
+
+  [data-chirp-tui] .is-selected .ctui-selector {
+    color: var(--dark-keyword, #e07840);
+  }
+
+  [data-chirp-tui] .ctui-menu-label {
+    color: #ddd5c5;
+    font-weight: 600;
+  }
+
+  [data-chirp-tui] .ctui-menu-description {
+    color: #807867;
+  }
+
+  [data-chirp-tui] .ctui-footer {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    min-height: 24px;
+    margin-top: auto;
+    padding-top: 13px;
+    border-top: 1px solid #393328;
+    color: #736c5e;
+    font-size: 10px;
+  }
+
+  [data-chirp-tui] .ctui-key {
+    color: #aaa18f;
+  }
+
+  [data-chirp-tui] .ctui-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 16px;
+    color: #777060;
+    font-size: 10px;
+  }
+
+  [data-chirp-tui] .ctui-breadcrumb strong {
+    color: #b8af9c;
+    font-weight: 600;
+  }
+
+  [data-chirp-tui] .ctui-list {
+    display: grid;
+    gap: 4px;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    overflow: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #514939 transparent;
+  }
+
+  [data-chirp-tui] .ctui-list-button {
+    display: grid;
+    grid-template-columns: 1.4em minmax(110px, .65fr) minmax(0, 1.4fr) 65px;
+    gap: 12px;
+    align-items: center;
+    min-height: 43px;
+    padding: 8px 12px !important;
+    border: 1px solid transparent !important;
+    border-radius: 6px !important;
+  }
+
+  [data-chirp-tui] .ctui-list-button:hover,
+  [data-chirp-tui] .ctui-list-button.is-selected {
+    border-color: #4d4334 !important;
+    background: #302a21 !important;
+  }
+
+  [data-chirp-tui] .ctui-list-name {
+    color: #d8d0c0;
+    font-weight: 600;
+  }
+
+  [data-chirp-tui] .ctui-list-path {
+    color: #777060;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  [data-chirp-tui] .ctui-count {
+    justify-self: end;
+    color: var(--dark-string, #d9a05f);
+  }
+
+  [data-chirp-tui] .ctui-table-wrap {
+    min-height: 0;
+    overflow: auto;
+    border: 1px solid #40392d;
+    border-radius: 7px;
+    scrollbar-width: thin;
+    scrollbar-color: #514939 transparent;
+  }
+
+  [data-chirp-tui] .ctui-table {
+    min-width: 720px;
+  }
+
+  [data-chirp-tui] .ctui-table-head,
+  [data-chirp-tui] .ctui-row-button {
+    display: grid;
+    grid-template-columns: 24px minmax(160px, 1.2fr) minmax(150px, 1fr) 90px 105px;
+    align-items: center;
+    gap: 13px;
+    min-height: 39px;
+    padding: 0 13px !important;
+  }
+
+  [data-chirp-tui] .ctui-table-head {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    border-bottom: 1px solid #40392d;
+    background: #29241d;
+    color: #70695b;
+    font-size: 9px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+  }
+
+  [data-chirp-tui] .ctui-row-button {
+    border-bottom: 1px solid #353027 !important;
+    color: #9f9786;
+  }
+
+  [data-chirp-tui] .ctui-row-button:last-child {
+    border-bottom: 0 !important;
+  }
+
+  [data-chirp-tui] .ctui-row-button:hover,
+  [data-chirp-tui] .ctui-row-button.is-selected {
+    background: #332b21 !important;
+  }
+
+  [data-chirp-tui] .ctui-row-button.is-selected {
+    box-shadow: inset 2px 0 var(--dark-keyword, #e07840);
+  }
+
+  [data-chirp-tui] .ctui-row-title {
+    color: #ded6c7;
+    font-weight: 600;
+  }
+
+  [data-chirp-tui] .ctui-status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #786f5e;
+  }
+
+  [data-chirp-tui] .ctui-status-dot.is-published {
+    background: var(--dark-ok, #a4b88a);
+  }
+
+  [data-chirp-tui] .ctui-status-dot.is-draft {
+    background: var(--dark-string, #d9a05f);
+  }
+
+  [data-chirp-tui] .ctui-editor-screen {
+    padding: 17px 18px 13px;
+  }
+
+  [data-chirp-tui] .ctui-editor-topbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 30px;
+    margin-bottom: 10px;
+    color: #756e60;
+    font-size: 10px;
+  }
+
+  [data-chirp-tui] .ctui-editor-title {
+    color: #d7cfbf;
+    font-weight: 600;
+  }
+
+  [data-chirp-tui] .ctui-save-state {
+    margin-left: auto;
+    color: #777060;
+  }
+
+  [data-chirp-tui] .ctui-save-state.is-saved {
+    color: var(--dark-ok, #a4b88a);
+  }
+
+  [data-chirp-tui] .ctui-pane-tabs {
+    display: none;
+    gap: 5px;
+    margin: 0 0 9px;
+  }
+
+  [data-chirp-tui] .ctui-pane-tab {
+    appearance: none;
+    padding: 5px 8px !important;
+    border: 1px solid #40392d !important;
+    border-radius: 4px !important;
+    background: transparent !important;
+    color: #8a8271 !important;
+    cursor: pointer;
+  }
+
+  [data-chirp-tui] .ctui-pane-tab.is-active {
+    border-color: #68543b !important;
+    background: #332a20 !important;
+    color: #ddd5c5 !important;
+  }
+
+  [data-chirp-tui] .ctui-editor-grid {
+    display: grid;
+    grid-template-columns: minmax(205px, .78fr) minmax(260px, 1.08fr) minmax(280px, 1.14fr);
+    min-width: 0;
+    min-height: 0;
+    flex: 1;
+    overflow: hidden;
+    border: 1px solid #40392d;
+    border-radius: 7px;
+  }
+
+  [data-chirp-tui] .ctui-pane {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    border-right: 1px solid #40392d;
+    background: #28231c;
+  }
+
+  [data-chirp-tui] .ctui-pane:last-child {
+    border-right: 0;
+  }
+
+  [data-chirp-tui] .ctui-pane-heading {
+    display: flex;
+    align-items: center;
+    min-height: 34px;
+    margin: 0 !important;
+    padding: 0 11px;
+    border-bottom: 1px solid #40392d;
+    color: #786f60;
+    font: 600 9px/1 var(--mono, ui-monospace, monospace) !important;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+  }
+
+  [data-chirp-tui] .ctui-fields {
+    display: grid;
+    gap: 10px;
+    min-height: 0;
+    margin: 0;
+    padding: 12px;
+    overflow: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #514939 transparent;
+  }
+
+  [data-chirp-tui] .ctui-field {
+    display: grid;
+    gap: 4px;
+  }
+
+  [data-chirp-tui] .ctui-field-label {
+    color: var(--dark-keyword, #e07840);
+    font-size: 9px;
+  }
+
+  [data-chirp-tui] .ctui-field-input {
+    width: 100%;
+    min-width: 0;
+    margin: 0 !important;
+    padding: 6px 7px !important;
+    border: 1px solid #40392d !important;
+    border-radius: 4px !important;
+    background: #211d17 !important;
+    color: #d6cebf !important;
+    outline: none;
+  }
+
+  [data-chirp-tui] .ctui-field-input:focus {
+    border-color: #87623d !important;
+    box-shadow: 0 0 0 1px #87623d;
+  }
+
+  [data-chirp-tui] .ctui-markdown {
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    flex: 1;
+    resize: none;
+    margin: 0 !important;
+    padding: 12px !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: #211d17 !important;
+    color: #cfc6b6 !important;
+    font: 500 11px/1.6 var(--mono, ui-monospace, monospace) !important;
+    outline: none;
+    tab-size: 2;
+  }
+
+  [data-chirp-tui] .ctui-preview-wrap {
+    min-height: 0;
+    flex: 1;
+    padding: 11px;
+    overflow: auto;
+    background: #1f1b16;
+    scrollbar-width: thin;
+    scrollbar-color: #514939 transparent;
+  }
+
+  [data-chirp-tui] .ctui-preview {
+    min-height: 100%;
+    padding: 24px 25px;
+    border-radius: 5px;
+    background: var(--surface, #fbf9f2);
+    color: var(--ink, #221e17);
+    font-family: var(--font-system, Georgia, serif);
+    box-shadow: 0 15px 35px -26px #000;
+  }
+
+  [data-chirp-tui] .ctui-preview .ctui-preview-title {
+    margin: 0 0 5px !important;
+    color: var(--ink, #221e17) !important;
+    font: 600 clamp(21px, 2.2vw, 31px)/1.05 var(--font-system, Georgia, serif) !important;
+    letter-spacing: -.035em;
+  }
+
+  [data-chirp-tui] .ctui-preview-scientific {
+    margin: 0 0 18px !important;
+    color: var(--muted, #59564d);
+    font: italic 12px/1.4 var(--font-system, Georgia, serif) !important;
+  }
+
+  [data-chirp-tui] .ctui-preview-body h2 {
+    margin: 18px 0 6px !important;
+    color: var(--ink, #221e17) !important;
+    font: 600 16px/1.15 var(--font-system, Georgia, serif) !important;
+  }
+
+  [data-chirp-tui] .ctui-preview-body p,
+  [data-chirp-tui] .ctui-preview-body li {
+    color: var(--ink-soft, #3d382c) !important;
+    font: 400 12px/1.58 var(--font-system, Georgia, serif) !important;
+  }
+
+  [data-chirp-tui] .ctui-preview-body p {
+    margin: 0 0 10px !important;
+  }
+
+  [data-chirp-tui] .ctui-preview-body ul {
+    margin: 0 0 10px 18px !important;
+    padding: 0 !important;
+  }
+
+  [data-chirp-tui] .ctui-scaffold-log {
+    display: grid;
+    gap: 7px;
+    width: min(760px, 100%);
+    margin-top: 6px;
+  }
+
+  [data-chirp-tui] .ctui-scaffold-line {
+    display: grid;
+    grid-template-columns: 1.5em minmax(0, 1fr);
+    opacity: 0;
+    transform: translateY(3px);
+  }
+
+  [data-chirp-tui] .ctui-scaffold-line.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 150ms ease, transform 180ms ease;
+  }
+
+  [data-chirp-tui] .ctui-scaffold-line.is-active .ctui-scaffold-icon {
+    color: var(--dark-string, #d9a05f);
+    animation: ctui-pulse 800ms ease-in-out infinite alternate;
+  }
+
+  [data-chirp-tui] .ctui-scaffold-line.is-complete .ctui-scaffold-icon {
+    color: var(--dark-ok, #a4b88a);
+    animation: none;
+  }
+
+  [data-chirp-tui] .ctui-done {
+    margin-top: 17px;
+    padding: 10px 12px;
+    border: 1px solid #654328;
+    border-radius: 6px;
+    background: #4d321f;
+    color: #e6d8c6;
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  [data-chirp-tui] .ctui-done.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 180ms ease, transform 210ms ease;
+  }
+
+  @keyframes ctui-cursor {
+    50% { opacity: 0; }
+  }
+
+  @keyframes ctui-pulse {
+    from { opacity: .45; }
+    to { opacity: 1; }
+  }
+
+  @media (max-width: 860px) {
+    [data-chirp-tui] .ctui-editor-grid {
+      grid-template-columns: minmax(190px, .8fr) minmax(230px, 1fr) minmax(250px, 1fr);
+      overflow-x: auto;
+    }
+
+    [data-chirp-tui] .ctui-screen {
+      padding-inline: 20px;
+    }
+  }
+
+  @media (max-width: 680px) {
+    [data-chirp-tui] .ctui-terminal {
+      height: 600px;
+      border-radius: 11px !important;
+    }
+
+    [data-chirp-tui] .ctui-body {
+      height: 558px;
+      font-size: 10.5px !important;
+    }
+
+    [data-chirp-tui] .ctui-screen {
+      padding: 19px 15px 13px;
+    }
+
+    [data-chirp-tui] .ctui-menu-button {
+      grid-template-columns: 1.2em minmax(0, 1fr);
+    }
+
+    [data-chirp-tui] .ctui-menu-description {
+      grid-column: 2;
+    }
+
+    [data-chirp-tui] .ctui-list-button {
+      grid-template-columns: 1.2em minmax(95px, 1fr) 52px;
+    }
+
+    [data-chirp-tui] .ctui-list-path {
+      display: none;
+    }
+
+    [data-chirp-tui] .ctui-pane-tabs {
+      display: flex;
+    }
+
+    [data-chirp-tui] .ctui-editor-grid {
+      display: block;
+      overflow: hidden;
+    }
+
+    [data-chirp-tui] .ctui-pane {
+      display: none;
+      height: 100%;
+      border-right: 0;
+    }
+
+    [data-chirp-tui] .ctui-pane.is-mobile-active {
+      display: flex;
+    }
+
+    [data-chirp-tui] .ctui-editor-screen {
+      padding: 12px;
+    }
+
+    [data-chirp-tui] .ctui-preview {
+      padding: 20px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-chirp-tui] .ctui-screen,
+    [data-chirp-tui] .ctui-boot-task,
+    [data-chirp-tui] .ctui-scaffold-line,
+    [data-chirp-tui] .ctui-done,
+    [data-chirp-tui] .ctui-restart {
+      transition: none !important;
+      transform: none !important;
+    }
+
+    [data-chirp-tui] .ctui-cursor,
+    [data-chirp-tui] .ctui-boot-task.is-running .ctui-boot-icon,
+    [data-chirp-tui] .ctui-scaffold-line.is-active .ctui-scaffold-icon {
+      animation: none !important;
+    }
+  }
+`;
+---
+
+<section
+  class:list={["chirp-tui-demo", className]}
+  data-chirp-tui
+  data-boot="idle"
+  data-ready="false"
+  style="visibility:hidden;display:block;width:100%;min-height:610px"
+  aria-label="Interactive Chirp terminal interface demonstration"
+>
+  <style is:inline media="not all" data-ctui-style set:html={css}></style>
+
+  <div class="ctui-terminal" data-terminal tabindex="0">
+    <div class="ctui-bar">
+      <span aria-hidden="true" style="display:contents">
+        <i class="ctui-dot"></i>
+        <i class="ctui-dot"></i>
+        <i class="ctui-dot"></i>
+        <span class="ctui-title">chirp-site - chirp</span>
+      </span>
+      <button class="ctui-restart" type="button" data-restart>Restart</button>
+    </div>
+
+    <div class="ctui-body">
+      <section class="ctui-screen is-active" data-screen="boot" aria-label="Starting Chirp">
+        <div class="ctui-command-line">
+          <span class="ctui-prompt">~&nbsp;</span>
+          <span class="ctui-command" data-command></span>
+          <span class="ctui-cursor" aria-hidden="true"></span>
+        </div>
+
+        <div class="ctui-boot-output" data-boot-output>
+          <div class="ctui-boot-task" data-boot-task data-running="reading src/content.config.ts" data-complete="read src/content.config.ts · 3 collections">
+            <span class="ctui-boot-icon" data-icon>·</span>
+            <span class="ctui-boot-label" data-label>reading src/content.config.ts</span>
+          </div>
+          <div class="ctui-boot-task" data-boot-task data-running="validating collection schemas" data-complete="validated 3 schemas · 49 fields">
+            <span class="ctui-boot-icon" data-icon>·</span>
+            <span class="ctui-boot-label" data-label>validating collection schemas</span>
+          </div>
+          <div class="ctui-boot-task" data-boot-task data-running="indexing content entries" data-complete="indexed 44 entries · ready">
+            <span class="ctui-boot-icon" data-icon>·</span>
+            <span class="ctui-boot-label" data-label>indexing content entries</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="ctui-screen" data-screen="home" aria-label="Chirp main menu">
+        <div class="ctui-intro">
+          <p class="ctui-eyebrow">Chirp</p>
+          <h2 class="ctui-heading">What would you like to do?</h2>
+          <p class="ctui-copy">Your Astro collections are validated and ready. Work directly from the schema and files already in your project.</p>
+        </div>
+
+        <div class="ctui-menu" role="listbox" aria-label="Main actions" data-home-menu>
+          <button class="ctui-menu-button is-selected" type="button" data-menu-item data-action="scaffold" aria-selected="true">
+            <span class="ctui-selector">›</span>
+            <span class="ctui-menu-label">Scaffold collections</span>
+            <span class="ctui-menu-description">Generate missing sample content and page templates.</span>
+          </button>
+          <button class="ctui-menu-button" type="button" data-menu-item data-action="manage" aria-selected="false">
+            <span class="ctui-selector">›</span>
+            <span class="ctui-menu-label">Manage content</span>
+            <span class="ctui-menu-description">Browse, edit and preview your existing entries.</span>
+          </button>
+        </div>
+
+        <div class="ctui-footer">
+          <span><span class="ctui-key">↑ ↓</span> navigate</span>
+          <span><span class="ctui-key">enter</span> select</span>
+        </div>
+      </section>
+
+      <section class="ctui-screen" data-screen="scaffold" aria-label="Scaffold collections">
+        <div class="ctui-breadcrumb"><span>chirp</span><span>/</span><strong>scaffold collections</strong></div>
+        <div class="ctui-intro">
+          <h2 class="ctui-heading">Scaffolding missing collections</h2>
+          <p class="ctui-copy">Chirp only creates templates for collections that do not already have them.</p>
+        </div>
+
+        <div class="ctui-scaffold-log" data-scaffold-log>
+          <div class="ctui-scaffold-line" data-scaffold-line><span class="ctui-scaffold-icon">·</span><span>checking existing page templates</span></div>
+          <div class="ctui-scaffold-line" data-scaffold-line><span class="ctui-scaffold-icon">·</span><span>validating plants and recipes · 37 fields</span></div>
+          <div class="ctui-scaffold-line" data-scaffold-line><span class="ctui-scaffold-icon">·</span><span>writing 2 representative sample entries</span></div>
+          <div class="ctui-scaffold-line" data-scaffold-line><span class="ctui-scaffold-icon">·</span><span>generating 4 collection and single page templates</span></div>
+          <div class="ctui-scaffold-line" data-scaffold-line><span class="ctui-scaffold-icon">·</span><span>wiring strings, arrays, objects, images and body content</span></div>
+        </div>
+
+        <div class="ctui-done" data-scaffold-done><span class="ctui-ok">✓</span> 2 collections scaffolded · ready to make them yours</div>
+
+        <div class="ctui-footer">
+          <span><span class="ctui-key">esc</span> cancel</span>
+          <span data-scaffold-return hidden><span class="ctui-key">enter</span> return to menu</span>
+        </div>
+      </section>
+
+      <section class="ctui-screen" data-screen="collections" aria-label="Content collections">
+        <div class="ctui-breadcrumb"><span>chirp</span><span>/</span><strong>manage content</strong></div>
+        <div class="ctui-intro">
+          <h2 class="ctui-heading">Select a collection</h2>
+          <p class="ctui-copy">Entries are read directly from your Astro content directories.</p>
+        </div>
+        <div class="ctui-list" role="listbox" data-collection-list></div>
+        <div class="ctui-footer">
+          <span><span class="ctui-key">esc</span> menu</span>
+          <span><span class="ctui-key">↑ ↓</span> navigate</span>
+          <span><span class="ctui-key">enter</span> open</span>
+        </div>
+      </section>
+
+      <section class="ctui-screen" data-screen="entries" aria-label="Collection entries">
+        <div class="ctui-breadcrumb"><span>chirp</span><span>/</span><span>content</span><span>/</span><strong data-entry-collection>Plants</strong></div>
+        <div class="ctui-intro">
+          <h2 class="ctui-heading"><span data-entry-heading>Plants</span> <span class="ctui-muted" data-entry-count>24 entries</span></h2>
+          <p class="ctui-copy">Select an entry to open its fields, markdown source and live preview.</p>
+        </div>
+        <div class="ctui-table-wrap">
+          <div class="ctui-table">
+            <div class="ctui-table-head"><span></span><span>Title</span><span>Slug</span><span>Status</span><span>Updated</span></div>
+            <div data-entry-rows></div>
+          </div>
+        </div>
+        <div class="ctui-footer">
+          <span><span class="ctui-key">esc</span> collections</span>
+          <span><span class="ctui-key">↑ ↓</span> navigate</span>
+          <span><span class="ctui-key">enter</span> edit</span>
+        </div>
+      </section>
+
+      <section class="ctui-screen ctui-editor-screen" data-screen="editor" aria-label="Edit content entry">
+        <div class="ctui-editor-topbar">
+          <span>chirp / content / <span data-editor-collection>plants</span> /</span>
+          <span class="ctui-editor-title" data-editor-title>Acai</span>
+          <span class="ctui-save-state" data-save-state>unsaved changes</span>
+        </div>
+
+        <div class="ctui-pane-tabs" aria-label="Editor panels">
+          <button class="ctui-pane-tab is-active" type="button" data-pane-tab="frontmatter">Frontmatter</button>
+          <button class="ctui-pane-tab" type="button" data-pane-tab="markdown">markdown</button>
+          <button class="ctui-pane-tab" type="button" data-pane-tab="preview">Preview</button>
+        </div>
+
+        <div class="ctui-editor-grid">
+          <section class="ctui-pane is-mobile-active" data-pane="frontmatter">
+            <h3 class="ctui-pane-heading">Frontmatter</h3>
+            <div class="ctui-fields">
+              <label class="ctui-field">
+                <span class="ctui-field-label">common_name</span>
+                <input class="ctui-field-input" data-field="title" value="Acai" />
+              </label>
+              <label class="ctui-field">
+                <span class="ctui-field-label">scientific_name</span>
+                <input class="ctui-field-input" data-field="scientific" value="Euterpe oleracea" />
+              </label>
+              <label class="ctui-field">
+                <span class="ctui-field-label">slug</span>
+                <input class="ctui-field-input" data-field="slug" value="acai" />
+              </label>
+              <label class="ctui-field">
+                <span class="ctui-field-label">family</span>
+                <input class="ctui-field-input" data-field="family" value="Arecaceae" />
+              </label>
+              <label class="ctui-field">
+                <span class="ctui-field-label">position</span>
+                <input class="ctui-field-input" data-field="position" value="Full sun to partial shade" />
+              </label>
+              <label class="ctui-field">
+                <span class="ctui-field-label">when.sow</span>
+                <input class="ctui-field-input" data-field="sow" value="Spring" />
+              </label>
+              <label class="ctui-field">
+                <span class="ctui-field-label">vegetable</span>
+                <input class="ctui-field-input" data-field="vegetable" value="false" />
+              </label>
+            </div>
+          </section>
+
+          <section class="ctui-pane" data-pane="markdown">
+            <h3 class="ctui-pane-heading">Raw markdown</h3>
+            <textarea class="ctui-markdown" data-markdown spellcheck="false">Acai is a slender palm native to the floodplains of the Amazon basin. Its deep purple fruit grows in dense clusters and has long been a staple food in the region.
+
+## Growing conditions
+
+Acai prefers warm, humid conditions and consistently moist, fertile soil.
+
+- Protect young palms from frost
+- Water deeply during dry spells
+- Feed with rich organic matter</textarea>
+          </section>
+
+          <section class="ctui-pane" data-pane="preview">
+            <h3 class="ctui-pane-heading">Live Preview</h3>
+            <div class="ctui-preview-wrap">
+              <article class="ctui-preview">
+                <p class="ctui-preview-kicker">Plant guide</p>
+                <h2 class="ctui-preview-title" data-preview-title>Acai</h2>
+                <p class="ctui-preview-scientific" data-preview-scientific>Euterpe oleracea</p>
+                <div class="ctui-preview-body" data-preview-body></div>
+              </article>
+            </div>
+          </section>
+        </div>
+
+        <div class="ctui-footer">
+          <span><span class="ctui-key">esc</span> entries</span>
+          <span><span class="ctui-key">⌘/ctrl s</span> save</span>
+          <span>edit either source; preview updates immediately</span>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const initialiseChirpTuiDemos = () => {
+      const roots = document.querySelectorAll("[data-chirp-tui]:not([data-ctui-initialised])");
+
+      roots.forEach((root) => {
+        if (!(root instanceof HTMLElement)) return;
+        root.dataset.ctuiInitialised = "true";
+
+        const style = root.querySelector("[data-ctui-style]");
+        const terminal = root.querySelector("[data-terminal]");
+        const command = root.querySelector("[data-command]");
+        const restart = root.querySelector("[data-restart]");
+        const screens = Array.from(root.querySelectorAll("[data-screen]"));
+        const bootTasks = Array.from(root.querySelectorAll("[data-boot-task]"));
+        const homeItems = Array.from(root.querySelectorAll("[data-menu-item]"));
+        const collectionList = root.querySelector("[data-collection-list]");
+        const entryRows = root.querySelector("[data-entry-rows]");
+        const scaffoldLines = Array.from(root.querySelectorAll("[data-scaffold-line]"));
+        const scaffoldDone = root.querySelector("[data-scaffold-done]");
+        const scaffoldReturn = root.querySelector("[data-scaffold-return]");
+        const markdown = root.querySelector("[data-markdown]");
+        const previewBody = root.querySelector("[data-preview-body]");
+        const previewTitle = root.querySelector("[data-preview-title]");
+        const previewScientific = root.querySelector("[data-preview-scientific]");
+        const editorTitle = root.querySelector("[data-editor-title]");
+        const editorCollection = root.querySelector("[data-editor-collection]");
+        const saveState = root.querySelector("[data-save-state]");
+
+        if (!(terminal instanceof HTMLElement) || !(command instanceof HTMLElement)) return;
+
+        const content = {
+          posts: {
+            label: "Posts",
+            path: "src/content/posts",
+            count: 12,
+            entries: [
+              { title: "From script to platform", slug: "script-to-platform", status: "published", updated: "today" },
+              { title: "Why your schema should stay the source", slug: "schema-as-source", status: "draft", updated: "2d ago" },
+              { title: "Editing without crossing the wire", slug: "offline-editing", status: "published", updated: "5d ago" },
+              { title: "A better way to work with mdx", slug: "better-mdx", status: "published", updated: "1w ago" },
+            ],
+          },
+          plants: {
+            label: "Plants",
+            path: "src/content/plants",
+            count: 24,
+            entries: [
+              { title: "Acai", slug: "acai", status: "published", updated: "today" },
+              { title: "Banana", slug: "banana", status: "published", updated: "yesterday" },
+              { title: "Cape gooseberry", slug: "cape-gooseberry", status: "draft", updated: "3d ago" },
+              { title: "Granadilla", slug: "granadilla", status: "published", updated: "6d ago" },
+              { title: "Lemon", slug: "lemon", status: "published", updated: "1w ago" },
+              { title: "Tomatillo", slug: "tomatillo", status: "draft", updated: "2w ago" },
+            ],
+          },
+          recipes: {
+            label: "Recipes",
+            path: "src/content/recipes",
+            count: 8,
+            entries: [
+              { title: "Charred brassicas", slug: "charred-brassicas", status: "published", updated: "today" },
+              { title: "Preserved lemon dressing", slug: "preserved-lemon-dressing", status: "published", updated: "4d ago" },
+              { title: "Tomatillo salsa", slug: "tomatillo-salsa", status: "draft", updated: "1w ago" },
+              { title: "Wood-fired flatbread", slug: "wood-fired-flatbread", status: "published", updated: "2w ago" },
+            ],
+          },
+        };
+
+        let activated = false;
+        let started = false;
+        let bootRunning = false;
+        let scaffoldRunning = false;
+        let sufficientlyVisible = false;
+        let currentScreen = "boot";
+        let homeIndex = 0;
+        let collectionIndex = 0;
+        let entryIndex = 0;
+        let activeCollection = "plants";
+        let activePane = "frontmatter";
+        const visibilityWaiters = new Set();
+        const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+        const activateStyles = () => {
+          if (activated) return;
+          activated = true;
+          if (style instanceof HTMLStyleElement) style.media = "all";
+          root.style.visibility = "visible";
+        };
+
+        const releaseVisibilityWaiters = () => {
+          if (!sufficientlyVisible || document.hidden) return;
+          visibilityWaiters.forEach((resolve) => resolve());
+          visibilityWaiters.clear();
+        };
+
+        const waitUntilVisible = () => {
+          if (sufficientlyVisible && !document.hidden) return Promise.resolve();
+          return new Promise((resolve) => visibilityWaiters.add(resolve));
+        };
+
+        const visibleSleep = async (duration) => {
+          if (reduceMotion || duration <= 0) return;
+          let remaining = duration;
+          while (remaining > 0) {
+            await waitUntilVisible();
+            const slice = Math.min(remaining, 50);
+            const start = performance.now();
+            await new Promise((resolve) => window.setTimeout(resolve, slice));
+            if (sufficientlyVisible && !document.hidden) remaining -= performance.now() - start;
+          }
+        };
+
+        const showScreen = (name) => {
+          currentScreen = name;
+          screens.forEach((screen) => {
+            if (screen instanceof HTMLElement) screen.classList.toggle("is-active", screen.dataset.screen === name);
+          });
+          window.setTimeout(() => terminal.focus({ preventScroll: true }), 0);
+        };
+
+        const setSelected = (items, index) => {
+          items.forEach((item, itemIndex) => {
+            if (!(item instanceof HTMLElement)) return;
+            const selected = itemIndex === index;
+            item.classList.toggle("is-selected", selected);
+            item.setAttribute("aria-selected", String(selected));
+            if (selected) item.scrollIntoView({ block: "nearest" });
+          });
+        };
+
+        const renderCollections = () => {
+          if (!(collectionList instanceof HTMLElement)) return;
+          collectionList.replaceChildren();
+          Object.entries(content).forEach(([key, collection], index) => {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "ctui-list-button";
+            button.dataset.collection = key;
+            button.dataset.collectionItem = "";
+            button.setAttribute("role", "option");
+            button.innerHTML = `<span class="ctui-selector">›</span><span class="ctui-list-name"></span><span class="ctui-list-path"></span><span class="ctui-count"></span>`;
+            const name = button.querySelector(".ctui-list-name");
+            const path = button.querySelector(".ctui-list-path");
+            const count = button.querySelector(".ctui-count");
+            if (name) name.textContent = collection.label;
+            if (path) path.textContent = collection.path;
+            if (count) count.textContent = String(collection.count);
+            button.addEventListener("click", () => openCollection(key));
+            collectionList.append(button);
+          });
+          collectionIndex = 0;
+          setSelected(Array.from(collectionList.querySelectorAll("[data-collection-item]")), collectionIndex);
+        };
+
+        const renderEntries = (key) => {
+          const collection = content[key];
+          if (!collection || !(entryRows instanceof HTMLElement)) return;
+          activeCollection = key;
+          entryRows.replaceChildren();
+
+          const collectionLabels = root.querySelectorAll("[data-entry-collection], [data-entry-heading]");
+          collectionLabels.forEach((label) => { if (label instanceof HTMLElement) label.textContent = collection.label; });
+          const count = root.querySelector("[data-entry-count]");
+          if (count instanceof HTMLElement) count.textContent = `${collection.count} entries`;
+
+          collection.entries.forEach((entry) => {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "ctui-row-button";
+            button.dataset.entryItem = "";
+            button.dataset.entrySlug = entry.slug;
+            button.innerHTML = `<span class="ctui-status-dot"></span><span class="ctui-row-title"></span><span class="ctui-muted"></span><span></span><span class="ctui-muted"></span>`;
+            const cells = button.children;
+            cells[0]?.classList.add(entry.status === "published" ? "is-published" : "is-draft");
+            if (cells[1]) cells[1].textContent = entry.title;
+            if (cells[2]) cells[2].textContent = entry.slug;
+            if (cells[3]) cells[3].textContent = entry.status;
+            if (cells[4]) cells[4].textContent = entry.updated;
+            button.addEventListener("click", () => openEditor(entry));
+            entryRows.append(button);
+          });
+
+          entryIndex = 0;
+          setSelected(Array.from(entryRows.querySelectorAll("[data-entry-item]")), entryIndex);
+        };
+
+        const openCollection = (key) => {
+          renderEntries(key);
+          showScreen("entries");
+        };
+
+        const parsemarkdown = (source) => {
+          if (!(previewBody instanceof HTMLElement)) return;
+          previewBody.replaceChildren();
+          const lines = source.split(/\r?\n/);
+          let list = null;
+          let paragraph = [];
+
+          const flushParagraph = () => {
+            if (!paragraph.length) return;
+            const p = document.createElement("p");
+            p.textContent = paragraph.join(" ").trim();
+            if (p.textContent) previewBody.append(p);
+            paragraph = [];
+          };
+
+          const flushList = () => {
+            if (!list) return;
+            previewBody.append(list);
+            list = null;
+          };
+
+          lines.forEach((line) => {
+            const trimmed = line.trim();
+            if (!trimmed) {
+              flushParagraph();
+              flushList();
+              return;
+            }
+            if (trimmed.startsWith("## ")) {
+              flushParagraph();
+              flushList();
+              const heading = document.createElement("h2");
+              heading.textContent = trimmed.slice(3);
+              previewBody.append(heading);
+              return;
+            }
+            if (trimmed.startsWith("- ")) {
+              flushParagraph();
+              if (!list) list = document.createElement("ul");
+              const item = document.createElement("li");
+              item.textContent = trimmed.slice(2);
+              list.append(item);
+              return;
+            }
+            flushList();
+            paragraph.push(trimmed);
+          });
+
+          flushParagraph();
+          flushList();
+        };
+
+        const markUnsaved = () => {
+          if (!(saveState instanceof HTMLElement)) return;
+          saveState.textContent = "unsaved changes";
+          saveState.classList.remove("is-saved");
+        };
+
+        const save = () => {
+          if (!(saveState instanceof HTMLElement)) return;
+          saveState.textContent = "✓ saved locally";
+          saveState.classList.add("is-saved");
+        };
+
+        const resetEditorValues = (entry) => {
+          const titleInput = root.querySelector('[data-field="title"]');
+          const scientificInput = root.querySelector('[data-field="scientific"]');
+          const slugInput = root.querySelector('[data-field="slug"]');
+          if (titleInput instanceof HTMLInputElement) titleInput.value = entry.title;
+          if (slugInput instanceof HTMLInputElement) slugInput.value = entry.slug;
+          if (scientificInput instanceof HTMLInputElement) {
+            scientificInput.value = activeCollection === "plants" && entry.slug === "acai" ? "Euterpe oleracea" : "";
+          }
+          if (previewTitle instanceof HTMLElement) previewTitle.textContent = entry.title;
+          if (previewScientific instanceof HTMLElement) previewScientific.textContent = scientificInput instanceof HTMLInputElement ? scientificInput.value : "";
+          if (editorTitle instanceof HTMLElement) editorTitle.textContent = entry.title;
+          if (editorCollection instanceof HTMLElement) editorCollection.textContent = activeCollection;
+          parsemarkdown(markdown instanceof HTMLTextAreaElement ? markdown.value : "");
+          save();
+        };
+
+        const openEditor = (entry) => {
+          resetEditorValues(entry);
+          showScreen("editor");
+        };
+
+        const setPane = (pane) => {
+          activePane = pane;
+          root.querySelectorAll("[data-pane-tab]").forEach((tab) => {
+            if (tab instanceof HTMLElement) tab.classList.toggle("is-active", tab.dataset.paneTab === pane);
+          });
+          root.querySelectorAll("[data-pane]").forEach((panel) => {
+            if (panel instanceof HTMLElement) panel.classList.toggle("is-mobile-active", panel.dataset.pane === pane);
+          });
+        };
+
+        const runBoot = async () => {
+          if (bootRunning) return;
+          bootRunning = true;
+          root.dataset.ready = "false";
+          root.dataset.boot = "typing";
+          showScreen("boot");
+          command.textContent = "";
+          bootTasks.forEach((task) => {
+            if (!(task instanceof HTMLElement)) return;
+            task.classList.remove("is-visible", "is-running", "is-complete");
+            const icon = task.querySelector("[data-icon]");
+            const label = task.querySelector("[data-label]");
+            if (icon instanceof HTMLElement) icon.textContent = "·";
+            if (label instanceof HTMLElement) label.textContent = task.dataset.running || "";
+          });
+
+          const commandText = "pnpm chirp";
+          await visibleSleep(210);
+          if (reduceMotion) {
+            command.textContent = commandText;
+          } else {
+            for (const character of commandText) {
+              await waitUntilVisible();
+              command.textContent += character;
+              await visibleSleep(character === " " ? 48 : 25 + Math.random() * 20);
+            }
+          }
+
+          root.dataset.boot = "running";
+          await visibleSleep(260);
+
+          for (const task of bootTasks) {
+            if (!(task instanceof HTMLElement)) continue;
+            task.classList.add("is-visible", "is-running");
+            const icon = task.querySelector("[data-icon]");
+            const label = task.querySelector("[data-label]");
+            if (icon instanceof HTMLElement) icon.textContent = "◌";
+            if (label instanceof HTMLElement) label.textContent = task.dataset.running || "";
+            await visibleSleep(520);
+            task.classList.remove("is-running");
+            task.classList.add("is-complete");
+            if (icon instanceof HTMLElement) icon.textContent = "✓";
+            if (label instanceof HTMLElement) label.textContent = task.dataset.complete || "";
+            await visibleSleep(180);
+          }
+
+          root.dataset.boot = "complete";
+          await visibleSleep(340);
+          homeIndex = 0;
+          setSelected(homeItems, homeIndex);
+          showScreen("home");
+          root.dataset.ready = "true";
+          bootRunning = false;
+        };
+
+        const runScaffold = async () => {
+          if (scaffoldRunning) return;
+          scaffoldRunning = true;
+          showScreen("scaffold");
+          scaffoldLines.forEach((line) => line.classList.remove("is-visible", "is-active", "is-complete"));
+          if (scaffoldDone instanceof HTMLElement) scaffoldDone.classList.remove("is-visible");
+          if (scaffoldReturn instanceof HTMLElement) scaffoldReturn.hidden = true;
+
+          await visibleSleep(180);
+          for (const line of scaffoldLines) {
+            if (!(line instanceof HTMLElement)) continue;
+            line.classList.add("is-visible", "is-active");
+            const icon = line.querySelector(".ctui-scaffold-icon");
+            if (icon instanceof HTMLElement) icon.textContent = "◌";
+            await visibleSleep(430);
+            line.classList.remove("is-active");
+            line.classList.add("is-complete");
+            if (icon instanceof HTMLElement) icon.textContent = "✓";
+            await visibleSleep(130);
+          }
+          if (scaffoldDone instanceof HTMLElement) scaffoldDone.classList.add("is-visible");
+          if (scaffoldReturn instanceof HTMLElement) scaffoldReturn.hidden = false;
+          scaffoldRunning = false;
+        };
+
+        const activateHomeItem = () => {
+          const item = homeItems[homeIndex];
+          if (!(item instanceof HTMLElement)) return;
+          if (item.dataset.action === "scaffold") void runScaffold();
+          if (item.dataset.action === "manage") {
+            renderCollections();
+            showScreen("collections");
+          }
+        };
+
+        homeItems.forEach((item, index) => {
+          item.addEventListener("mouseenter", () => {
+            homeIndex = index;
+            setSelected(homeItems, homeIndex);
+          });
+          item.addEventListener("click", () => {
+            homeIndex = index;
+            activateHomeItem();
+          });
+        });
+
+        root.querySelectorAll("[data-pane-tab]").forEach((tab) => {
+          tab.addEventListener("click", () => {
+            if (tab instanceof HTMLElement && tab.dataset.paneTab) setPane(tab.dataset.paneTab);
+          });
+        });
+
+        root.querySelectorAll("[data-field]").forEach((field) => {
+          field.addEventListener("input", () => {
+            if (!(field instanceof HTMLInputElement)) return;
+            if (field.dataset.field === "title") {
+              if (previewTitle instanceof HTMLElement) previewTitle.textContent = field.value || "Untitled";
+              if (editorTitle instanceof HTMLElement) editorTitle.textContent = field.value || "Untitled";
+            }
+            if (field.dataset.field === "scientific" && previewScientific instanceof HTMLElement) {
+              previewScientific.textContent = field.value;
+            }
+            markUnsaved();
+          });
+        });
+
+        if (markdown instanceof HTMLTextAreaElement) {
+          markdown.addEventListener("input", () => {
+            parsemarkdown(markdown.value);
+            markUnsaved();
+          });
+          parsemarkdown(markdown.value);
+        }
+
+        if (restart instanceof HTMLButtonElement) restart.addEventListener("click", () => void runBoot());
+
+        terminal.addEventListener("mousedown", (event) => {
+          const target = event.target;
+          if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target instanceof HTMLButtonElement) return;
+          terminal.focus({ preventScroll: true });
+        });
+
+        terminal.addEventListener("keydown", (event) => {
+          const target = event.target;
+          const editing = target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement;
+
+          if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "s" && currentScreen === "editor") {
+            event.preventDefault();
+            save();
+            return;
+          }
+
+          if (editing && event.key !== "Escape") return;
+
+          if (event.key === "Escape") {
+            event.preventDefault();
+            if (currentScreen === "editor") showScreen("entries");
+            else if (currentScreen === "entries") showScreen("collections");
+            else if (currentScreen === "collections" || currentScreen === "scaffold") showScreen("home");
+            return;
+          }
+
+          if (currentScreen === "home") {
+            if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+              event.preventDefault();
+              homeIndex = (homeIndex + (event.key === "ArrowDown" ? 1 : -1) + homeItems.length) % homeItems.length;
+              setSelected(homeItems, homeIndex);
+            } else if (event.key === "Enter") {
+              event.preventDefault();
+              activateHomeItem();
+            }
+            return;
+          }
+
+          if (currentScreen === "collections") {
+            const items = collectionList instanceof HTMLElement ? Array.from(collectionList.querySelectorAll("[data-collection-item]")) : [];
+            if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+              event.preventDefault();
+              collectionIndex = (collectionIndex + (event.key === "ArrowDown" ? 1 : -1) + items.length) % items.length;
+              setSelected(items, collectionIndex);
+            } else if (event.key === "Enter") {
+              event.preventDefault();
+              const item = items[collectionIndex];
+              if (item instanceof HTMLElement && item.dataset.collection) openCollection(item.dataset.collection);
+            }
+            return;
+          }
+
+          if (currentScreen === "entries") {
+            const items = entryRows instanceof HTMLElement ? Array.from(entryRows.querySelectorAll("[data-entry-item]")) : [];
+            if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+              event.preventDefault();
+              entryIndex = (entryIndex + (event.key === "ArrowDown" ? 1 : -1) + items.length) % items.length;
+              setSelected(items, entryIndex);
+            } else if (event.key === "Enter") {
+              event.preventDefault();
+              const entry = content[activeCollection]?.entries[entryIndex];
+              if (entry) openEditor(entry);
+            }
+            return;
+          }
+
+          if (currentScreen === "scaffold" && !scaffoldRunning && event.key === "Enter") {
+            event.preventDefault();
+            showScreen("home");
+          }
+        });
+
+        const observer = new IntersectionObserver(
+          (entries) => {
+            const entry = entries[0];
+            if (!entry) return;
+            if (entry.isIntersecting) activateStyles();
+            sufficientlyVisible = entry.isIntersecting && entry.intersectionRatio >= 0.28;
+            releaseVisibilityWaiters();
+            if (sufficientlyVisible && !started) {
+              started = true;
+              renderCollections();
+              void runBoot();
+            }
+          },
+          { threshold: [0, 0.08, 0.18, 0.28, 0.5, 0.75], rootMargin: "0px 0px -3% 0px" },
+        );
+
+        observer.observe(root);
+        document.addEventListener("visibilitychange", releaseVisibilityWaiters);
+      });
+    };
+
+    initialiseChirpTuiDemos();
+    document.addEventListener("astro:page-load", initialiseChirpTuiDemos);
+  </script>
+</section>

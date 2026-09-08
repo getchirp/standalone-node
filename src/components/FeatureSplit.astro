@@ -1,0 +1,44 @@
+---
+interface Props {
+  id?: string;
+  title: string;
+  subheading?: string;
+  description: string;
+  layout?: 'text-left' | 'text-right' | 'stacked';
+  bodyLayout?: 'full' | 'visual-aside';
+  song?: string;
+}
+
+const {
+  id,
+  title,
+  subheading,
+  description,
+  layout = 'text-left',
+  bodyLayout = 'full',
+  song,
+} = Astro.props;
+---
+
+<section class:list={['feature-section', `feature-section-${layout}`, `feature-section-body-${bodyLayout}`]} id={id} data-home-song={song}>
+  <div class="wrap">
+    <div class="feature-heading" data-home-reveal="true">
+      <div class="feature-copy">
+        <h2>{title}</h2>
+        {subheading && <p class="feature-subheading">{subheading}</p>}
+      </div>
+      <p class="feature-lede">{description}</p>
+    </div>
+    <div class="feature-body">
+      <div class="feature-visual-slot" data-home-reveal="true">
+        <slot name="visual" />
+      </div>
+      <div class="feature-aside-slot" data-home-reveal="true">
+        <slot name="aside" />
+      </div>
+    </div>
+    <div class="feature-tail" data-home-reveal="true">
+      <slot name="tail" />
+    </div>
+  </div>
+</section>

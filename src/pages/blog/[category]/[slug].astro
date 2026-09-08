@@ -1,0 +1,148 @@
+---
+import Base from '../../../layouts/Base.astro';
+import ReadNextCard from '../../../components/ReadNextCard.astro';
+import CategoryIcon from '../../../components/CategoryIcon.astro';
+import SubscribeBlock from '../../../components/SubscribeBlock.astro';
+import '../../../styles/blog-post.css';
+import '../../../styles/blog.css';
+import { getCollection, getEntry, render } from 'astro:content';
+import { makeIds, assembleGraph, buildPiece } from '@jdevalk/seo-graph-core';
+import { buildWebSite, buildWebPage, buildArticle } from '@jdevalk/seo-graph-core';
+export const prerender = true;
+export async function getStaticPaths() {
+  const posts = await getCollection('post', ({ data }) => !data.draft);
+  return [
+    ...posts.map((post) => ({
+      params: {
+        category: post.data.category.id,
+        slug: post.id,
+      },
+      props: { post },
+      cacheKey: String(post.digest),
+    })),
+  ];
+}
+
+const { post } = Astro.props;
+const { Content } = post ? await render(post) : { Content: null };
+
+const { title = '', description = '', date = new Date(0), author = 'Chirp', tags, category: categoryRef } = post?.data ?? {};
+
+const siteUrl = 'https://chirp.md';
+const pageUrl = `${siteUrl}/blog/${categoryRef.id}/${post.id}`;
+const ids = makeIds({ siteUrl });
+
+const categoryEntry = categoryRef ? await getEntry(categoryRef) : null;
+const categoryName = categoryEntry?.data?.name || 'Updates';
+const categorySlug = categoryEntry?.data?.slug || 'engineering';
+
+const pageGraph = assembleGraph([
+  buildWebSite({ url: siteUrl, name: 'Chirp', description: 'Modern publishing platform for teams.', inLanguage: 'en' }, ids),
+  buildPiece({ '@type': 'Organization', url: siteUrl, name: 'Chirp', description: 'Modern publishing platform for teams.' }),
+  buildWebPage({ url: pageUrl, name: title, description, inLanguage: 'en' }, ids),
+  buildArticle({
+    url: pageUrl, headline: title, description, datePublished: date,
+    isPartOf: { '@id': ids.webPage(pageUrl) },
+    author: { '@id': ids.person, name: author || 'Chirp Team' },
+    publisher: { '@id': ids.organization('swyft') },
+    articleSection: categoryName, inLanguage: 'en',
+  }, ids, 'BlogPosting'),
+]);
+
+const wordCount = post?.body ? post.body.split(/\s+/).length : 0;
+const readTime = Math.max(1, Math.ceil(wordCount / 200));
+
+
+const allPosts = post ? await getCollection('post', ({ data }) => !data.draft) : [];
+allPosts.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+const relatedRaw = post ? allPosts.filter((p) => p.id !== post.id).slice(0, 2) : [];
+const related = await Promise.all(relatedRaw.map(async (rp) => {
+  const cRef = rp.data.category;
+  const cEntry = cRef ? await getEntry(cRef) : null;
+  return { ...rp, resolvedCategory: cEntry };
+}));
+---
+
+
+<Base title={title} description={description} ogImage={`/og/blog/${post?.id}.jpg`} graph={pageGraph} current="blog">
+  <main>
+    <!-- Post Header -->
+    <header class="post-page-header">
+      <div class="blog-post-shell">
+        <a href="/blog" class="post-back">
+          <span class="mono">&larr;</span>
+          <span>All posts</span>
+        </a>
+
+        <div class="post-meta">
+          <span class:list={['post-category-icon', `post-category-${categorySlug}`]}>
+            <CategoryIcon name={categorySlug as any} />
+          </span>
+          <span class:list={['post-category-label', `post-category-${categorySlug}`]}>{categoryName}</span>
+          <span class="post-meta-info">
+            {new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+            &nbsp;&middot; {readTime} min read
+          </span>
+        </div>
+
+        <h1 class="post-title" id="post-title">{title}</h1>
+        <p class="post-subtitle">{description}</p>
+
+        <div class="post-author">
+          <span class="post-author-avatar">{author ? author.charAt(0) : 'S'}</span>
+          <div>
+            <div class="post-author-name">{author || 'Chirp Team'}</div>
+            <div class="post-author-title">Chirp</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Article Body -->
+    <article class="post-article-surface" aria-labelledby="post-title">
+      <div class="post-article-inner">
+        <div class="post-prose" role="region" aria-label="Article content">
+          <Content />
+        </div>
+
+        {tags && tags.length > 0 && (
+          <div class="post-tags-shell">
+            <div class="post-tags-row">
+              <div class="post-tags">
+                {tags.map((tag) => <span class="post-tag mono">{tag}</span>)}
+              </div>
+              <a class="post-share" aria-disabled="true">Share this post &rarr;</a>
+            </div>
+          </div>
+        )}
+      </div>
+    </article>
+
+    <!-- Read Next -->
+    {related.length > 0 && (
+      <section class="read-next">
+        <div class="read-next-inner">
+          <div class="read-next-head">
+            <h2>Read next</h2>
+            <a href="/blog" class="read-next-all">All posts &rarr;</a>
+          </div>
+          <div class="read-next-grid">
+            {related.map((rp) => (
+              <ReadNextCard
+                title={rp.data.title}
+                excerpt={rp.data.description}
+                url={`/blog/${rp.resolvedCategory.id}/${rp.id}`}
+                category={rp.resolvedCategory?.data?.name || 'Updates'}
+                categorySlug={rp.resolvedCategory?.data?.slug || 'engineering'}
+                date={new Date(rp.data.date).toLocaleDateString('en-US', { month: 'short', day: '2-digit' })}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+
+    <!-- Subscribe -->
+    <SubscribeBlock />
+  </main>
+</Base>

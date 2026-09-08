@@ -1,0 +1,57 @@
+---
+import BlogTimelinePost from './BlogTimelinePost.astro';
+import type { CollectionEntry } from 'astro:content';
+
+interface ResolvedPost extends CollectionEntry<'post'> {
+  resolvedCategory: CollectionEntry<'postCategories'> | null;
+}
+
+interface Props {
+  posts: ResolvedPost[];
+  compact?: boolean;
+}
+
+const { posts, compact = false } = Astro.props;
+
+const grouped = posts.reduce((acc, post) => {
+  const d = new Date(post.data.date);
+  const key = d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  if (!acc[key]) acc[key] = [];
+  acc[key].push(post);
+  return acc;
+}, {} as Record<string, ResolvedPost[]>);
+
+const sorted = Object.entries(grouped);
+
+function getReadTime(post: ResolvedPost): string {
+  const words = post.body ? post.body.split(/\s+/).length : 0;
+  return `${Math.max(1, Math.ceil(words / 200))} min read`;
+}
+---
+
+<div class="blog-timeline">
+  {sorted.map(([month, groupPosts]) => (
+    <div class="timeline-group">
+      <div class="timeline-rail">
+        <div class="timeline-rail-inner">
+          <h2 class="timeline-rail-month" id={month.toLowerCase().replace(/\s+/g, '-')}>{month}</h2>
+          <p class="timeline-rail-count" aria-label={`${groupPosts.length} ${groupPosts.length === 1 ? 'post' : 'posts'} in ${month}`}>{groupPosts.length} {groupPosts.length === 1 ? 'post' : 'posts'}</p>
+        </div>
+      </div>
+      <ul class="timeline-posts">
+        {groupPosts.map((post) => (
+          <BlogTimelinePost
+            title={post.data.title}
+            excerpt={post.data.description}
+            url={`/blog/${post.resolvedCategory.id}/${post.id}`}
+            category={post.resolvedCategory?.data?.name || 'Updates'}
+            categorySlug={post.resolvedCategory?.data?.slug || 'engineering'}
+            date={new Date(post.data.date).toLocaleDateString('en-US', { month: 'short', day: '2-digit' })}
+            compact={compact}
+            readTime={compact ? getReadTime(post) : undefined}
+          />
+        ))}
+      </ul>
+    </div>
+  ))}
+</div>

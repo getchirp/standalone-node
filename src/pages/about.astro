@@ -1,0 +1,289 @@
+---
+import Base from '../layouts/Base.astro';
+import Logo from '../components/Logo.astro';
+import '../styles/about.css';
+import { makeIds, assembleGraph, buildPiece } from '@jdevalk/seo-graph-core';
+import { buildWebSite, buildWebPage } from '@jdevalk/seo-graph-core';
+
+const siteUrl = 'https://chirp.md';
+const pageUrl = siteUrl + '/about';
+const ids = makeIds({ siteUrl });
+
+const pageGraph = assembleGraph([
+  buildWebSite({
+    url: siteUrl,
+    name: 'Chirp',
+    description: 'Modern publishing platform for teams - write, review, organize, and publish with confidence.',
+    inLanguage: 'en',
+  }, ids),
+  buildPiece({
+    '@type': 'Organization',
+    url: siteUrl,
+    name: 'Chirp',
+    description: 'Modern publishing platform for teams - write, review, organize, and publish with confidence.',
+  }),
+  buildWebPage({
+    url: pageUrl,
+    name: 'The Chirp Story - Why we built it',
+    description: 'The story of how twenty-plus years of building for the web shaped a philosophy - and how that philosophy became Chirp.',
+    inLanguage: 'en',
+  }, ids),
+]);
+
+const heroHeadline = 'Every decision has a backstory. This is ours.';
+const closingLine = 'Decades of making software simpler and cutting friction. Publishing tools that work for the people creating content and the developers who build their platforms.';
+
+const chapters = [
+  {
+    num: '01',
+    era: 'Oracle',
+    title: 'Foundations first.',
+    body:
+      'A six-month Oracle bootcamp: hardware, networking, engineering. Oracle Forms, Reports, Portal, 9iAS - then two months of Java training in Zimbabwe. Before building anything for the web, I learned how systems work from the metal up.',
+    lesson: 'Strong systems are built on strong foundations.',
+  },
+  {
+    num: '02',
+    era: 'UK · Entrepreneurship',
+    title: 'Learning what businesses are for.',
+    body:
+      'I travelled to the UK, worked odd jobs, started an eBay trading business, and built it into a wholesale dropshipping company. Every sale taught the same thing: customers pay you to make something easier.',
+    lesson: 'Businesses exist to remove friction.',
+  },
+  {
+    num: '03',
+    era: 'Agency years',
+    title: 'The same problems, on repeat.',
+    body:
+      'At a boutique agency building real-estate sites and property portals, the same client problems came back project after project. When a problem repeats that reliably, it is not a project - it is a product waiting to exist.',
+    lesson: 'Repeated client problems reveal product opportunities.',
+  },
+  {
+    num: '04',
+    era: 'Joomla framework',
+    title: 'From templates to a framework.',
+    body:
+      'Our templates evolved into a proper framework: a parent theme, child themes, central administration, shared functionality. The first taste of building a platform instead of one-offs.',
+    lesson: 'Abstraction should reduce work.',
+  },
+  {
+    num: '05',
+    era: 'Competition',
+    title: 'A free alternative appears.',
+    body:
+      'A well-funded competitor released a free alternative to what we had built. It hurt - and it clarified something: you cannot control the market, only your momentum.',
+    lesson: 'Keep shipping while pursuing the long-term vision.',
+  },
+  {
+    num: '06',
+    era: 'Headway Rocket',
+    title: 'Platforms multiply.',
+    body:
+      'We extended Headway and built a plugin ecosystem around it - reaching 40,000 customers. The product\'s value did not come from the core alone; it came from what others could build on top of it.',
+    lesson: 'Great platforms multiply through extensions.',
+  },
+  {
+    num: '07',
+    era: 'Beans',
+    title: 'Flexibility without the weight.',
+    body:
+      'Beans was a WordPress framework built around a Fields API, a Markup API, white-labelling, a UI framework and intelligent caching. It proved a stubborn belief: you do not have to trade performance for power.',
+    lesson: 'Flexibility and performance can coexist.',
+  },
+  {
+    num: '08',
+    era: 'Wine Folly',
+    title: 'Watching real editors work.',
+    body:
+      'As Principal Designer & Developer I rebuilt the site on Beans, dramatically improved performance, created a consistent design system, and built extensive Gutenberg block libraries. I also felt the growing complexity of React-based editing - so I built a shortcode system, then evolved it into a visual builder with reusable presets. Editors should focus on content, not tooling. This is where “Never Ask Twice” was born.',
+    lesson: 'The best publishing software remembers for people.',
+  },
+  {
+    num: '09',
+    era: 'Modern web',
+    title: 'Complexity on trial.',
+    body:
+      'I explored Gridsome, Vue, Nuxt and Astro - and converged somewhere simpler: HTMX, native browser APIs, vanilla CSS and JavaScript, strict performance budgets, minimal dependencies. Every dependency now has to earn its place.',
+    lesson: 'Software should justify its complexity.',
+  },
+  {
+    num: '10',
+    era: 'The editor I couldn’t find',
+    title: 'So I decided to build it.',
+    body:
+      'I tried virtually every mainstream CMS, hoping each would become the platform for future client work. Keystatic came closest - but still brought extra configuration, a React dependency, SSR requirements, more abstraction. The editor I wanted did not exist. That settled it.',
+    lesson: 'If the right tool does not exist, build it.',
+  },
+];
+
+const stages = [
+  {
+    step: 'STAGE 01',
+    title: 'A scaffolding script',
+    body:
+      'A Node.js script generating large Astro content collections - 200+ fields. The script had to learn the schema to do its job.',
+    takeaway: 'Software that understands the schema can generate the editing experience.',
+  },
+  {
+    step: 'STAGE 02',
+    title: 'CLI prototype',
+    body:
+      'Schema-driven editing, proven. Astro stayed the single source of truth - no duplicate schemas, no parallel config.',
+    takeaway: 'Never duplicate configuration.',
+  },
+  {
+    step: 'STAGE 03',
+    title: 'Local Go application',
+    body:
+      'A sidecar app. No SSR, no changes to the Astro project. Ideal for individuals and freelancers.',
+    takeaway: 'The editor adapts to the project - not the other way around.',
+  },
+  {
+    step: 'STAGE 04',
+    title: 'Astro native',
+    body:
+      'Installed as a dev dependency. Local-only or deployable collaborative editing - with zero runtime impact on the public website.',
+    takeaway: 'Visitors should never pay for the editing experience.',
+  },
+];
+---
+
+
+<Base title="The Chirp Story - Why we built it" description="The story of how twenty-plus years of building for the web shaped a philosophy - and how that philosophy became Chirp." ogImage="/og/about.jpg" graph={pageGraph} current="about">
+  <div class="page-story">
+    <section class="story-hero">
+      <div class="shell">
+        <div class="story-hero-copy">
+          <div class="eyebrow">Our story</div>
+          <h1>{heroHeadline}</h1>
+          <p>
+            This is not a résumé. It is the story of how twenty-plus years of building for the web
+            slowly shaped a philosophy - and how that philosophy became Chirp. Every chapter taught
+            one lesson. Together, those lessons are the backbone of every product decision we make.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="story-timeline-section">
+      <div class="shell story-timeline-shell">
+        <div class="story-timeline">
+          {chapters.map((chapter) => (
+            <article class="timeline-row">
+              <div class="timeline-meta">
+                <div class="timeline-num mono">{chapter.num}</div>
+                <div class="timeline-era mono">{chapter.era}</div>
+              </div>
+
+              <div class="timeline-content">
+                <h2>{chapter.title}</h2>
+                <p>{chapter.body}</p>
+                <div class="timeline-lesson">
+                  <span class="mono">Lesson</span>
+                  <strong>{chapter.lesson}</strong>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="story-dark-band">
+      <div class="shell">
+        <div class="story-dark-copy">
+          <div class="eyebrow">The missing piece</div>
+          <h2>Building at the speed of curiosity.</h2>
+          <p>
+            Throughout my career I&apos;ve been the product strategist, the systems
+                        designer - fortunate to work alongside exceptional developers. But turning ambitious
+                        ideas into reality always meant assembling and coordinating teams.
+          </p>
+          <p>
+            AI changed that equation. Not by replacing experience or vision - but by collapsing the
+            gap between an idea and a working product. It has become an always-available team for
+            thinking, planning, challenging ideas, prototyping and building towards a shared
+            vision.
+          </p>
+          <p class="story-dark-emphasis">
+            After more than twenty years building for the web, I can finally build at the speed of
+            my curiosity. Chirp is the clearest expression of that journey.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="story-evolution">
+      <div class="shell">
+        <div class="story-section-copy">
+          <div class="eyebrow">The evolution</div>
+          <h2 class="section-heading">It started with a script.</h2>
+          <p>
+            Chirp was not designed in a pitch deck. It evolved - each stage a working tool that
+            taught us what the next one had to be.
+          </p>
+        </div>
+
+        <div class="story-stage-grid">
+          {stages.map((stage) => (
+            <article class="story-stage-card">
+              <div class="story-stage-step mono">{stage.step}</div>
+              <h3>{stage.title}</h3>
+              <p>{stage.body}</p>
+              <div class="story-stage-takeaway">{stage.takeaway}</div>
+            </article>
+          ))}
+        </div>
+
+        <p class="story-stage-summary">
+          The realisation that carried through every stage: if software understands the schema, it
+          can generate the editing experience. One schema powers validation, documentation, the
+          editing UI, AI understanding and plugins - nothing is ever duplicated, and nothing is ever
+          asked twice.
+        </p>
+      </div>
+    </section>
+
+    <section class="story-principles-section">
+      <div class="shell">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">What the lessons became</div>
+            <h2 class="section-heading">The backbone of every decision.</h2>
+          </div>
+          <p>
+            Ten lessons, learned the long way. When we are unsure what to build - or what to leave
+            out - we come back here.
+          </p>
+        </div>
+
+        <div class="story-principles-grid">
+          {chapters.map((chapter) => (
+            <div class="story-principle-card">
+              <span class="mono">{chapter.num}</span>
+              <strong>{chapter.lesson}</strong>
+            </div>
+          ))}
+        </div>
+
+        <p class="story-principle-summary">
+          The clearest of them all came from watching real editors work: the best publishing
+          software remembers for people. That became <span>Never Ask Twice</span> - the philosophy
+          behind everything Chirp does.
+        </p>
+      </div>
+    </section>
+
+    <section class="story-closing">
+      <div class="shell story-closing-inner">
+        <Logo size={36} text={false} />
+        <h2>Chirp is not another CMS.</h2>
+        <p>{closingLine}</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="/#products">Explore the platform</a>
+          <a class="button button-secondary" href="/#pricing">Get started</a>
+        </div>
+      </div>
+    </section>
+  </div>
+</Base>

@@ -1,0 +1,61 @@
+---
+import Logo from './Logo.astro';
+
+const { current = '' } = Astro.props;
+const groups = [
+  {
+    title: 'Product',
+    links: [
+      ['Editor', '/#editor'],
+      ['mdx components', '/#components'],
+      ['Collections', '/#collections'],
+      ['Media library', '/#media'],
+    ],
+  },
+  {
+    title: 'Project',
+    links: [
+      ['Documentation', '/docs'],
+      ['GitHub', 'https://github.com/getchirp/chirp.md'],
+      ['Releases', '/releases'],
+      ['Compatibility', '/#story'],
+    ],
+  },
+  {
+    title: 'Community',
+    links: [
+      ['Astro', 'https://astro.build'],
+      ['Discord', 'https://astro.build/chat'],
+      ['Themes directory', 'https://astro.build/themes'],
+    ],
+  },
+];
+---
+
+<footer class="site-footer">
+  <div class="shell footer-shell">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <Logo text={false} size={50} />
+        <p>A local, visual Markdown and mdx editor for Astro projects. Your files stay your files.</p>
+      </div>
+      {groups.map((group) => (
+        <nav class="footer-group" aria-label={group.title}>
+          <div class="footer-title">{group.title}</div>
+          {group.links.map(([label, href]) => (
+            <a
+              href={href}
+              aria-current={current && href === `/${current}` ? 'page' : undefined}
+              target={href.startsWith('http') ? '_blank' : undefined}
+              rel={href.startsWith('http') ? 'noreferrer' : undefined}
+            >{label}</a>
+          ))}
+        </nav>
+      ))}
+    </div>
+    <div class="footer-base">
+      <span>Chirp.md</span>
+      <span>Built with Astro, Tiptap and HTMX.</span>
+    </div>
+  </div>
+</footer>

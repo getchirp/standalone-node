@@ -1,0 +1,670 @@
+---
+interface Props {
+  collectionCount?: number;
+  fieldCount?: number;
+  class?: string;
+}
+
+const {
+  collectionCount = 3,
+  fieldCount = 26,
+  class: className,
+} = Astro.props;
+
+const scaffoldedCount = Math.max(1, collectionCount - 1);
+const pageTemplateCount = scaffoldedCount * 2;
+const totalFields = fieldCount + 11;
+
+const css = String.raw`
+  [data-chirp-scaffold-terminal],
+  [data-chirp-scaffold-terminal] * {
+    box-sizing: border-box;
+  }
+
+  [data-chirp-scaffold-terminal] {
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    color: var(--dark-muted, #a49c87);
+    font-family: var(--mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
+  }
+
+  [data-chirp-scaffold-terminal] .cst-terminal {
+    position: relative;
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 350px;
+    overflow: hidden;
+    margin: 0 !important;
+    border: 1px solid var(--dark-line, #453e30) !important;
+    border-radius: var(--radius, 14px) !important;
+    background: var(--dark, #242019) !important;
+    box-shadow: var(--page-shadow, 0 34px 70px -38px #2e261861) !important;
+  }
+
+  [data-chirp-scaffold-terminal] .cst-bar {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    height: 42px;
+    padding: 0 16px;
+    border-bottom: 1px solid var(--dark-line, #453e30);
+    background: color-mix(in srgb, var(--dark, #242019) 94%, black);
+  }
+
+  [data-chirp-scaffold-terminal] .cst-dot {
+    display: block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #5d5542;
+  }
+
+  [data-chirp-scaffold-terminal] .cst-title {
+    margin-left: 4px;
+    color: #8e8674;
+    font: 500 10px/1 var(--mono, ui-monospace, monospace) !important;
+    letter-spacing: .01em;
+  }
+
+  [data-chirp-scaffold-terminal] .cst-replay {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    margin: 0 0 0 auto !important;
+    padding: 4px 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    color: var(--dark-ok, #a4b88a) !important;
+    font: 500 10px/1 var(--mono, ui-monospace, monospace) !important;
+    letter-spacing: .01em;
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, currentColor 55%, transparent);
+    text-underline-offset: 3px;
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(2px);
+    transition:
+      opacity 220ms ease,
+      transform 220ms ease,
+      visibility 0s linear 220ms;
+  }
+
+  [data-chirp-scaffold-terminal][data-state="complete"] .cst-replay {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0);
+    transition-delay: 120ms, 120ms, 0s;
+  }
+
+  [data-chirp-scaffold-terminal] .cst-replay:hover {
+    color: #c5d4b0 !important;
+  }
+
+  [data-chirp-scaffold-terminal] .cst-replay:focus-visible {
+    outline: 1px solid var(--dark-ok, #a4b88a);
+    outline-offset: 4px;
+  }
+
+  [data-chirp-scaffold-terminal] .cst-body {
+    height: 310px;
+    overflow: hidden;
+    padding: clamp(21px, 3vw, 29px) clamp(19px, 3.3vw, 34px) 28px;
+    font: 500 clamp(11px, 1.25vw, 13px)/1.5 var(--mono, ui-monospace, monospace) !important;
+  }
+
+  [data-chirp-scaffold-terminal] .cst-command-line {
+    display: flex;
+    align-items: baseline;
+    min-height: 1.5em;
+    color: #e6dfcf;
+  }
+
+  [data-chirp-scaffold-terminal] .cst-prompt,
+  [data-chirp-scaffold-terminal] .cst-keyword {
+    color: var(--dark-keyword, #e07840);
+  }
+
+  [data-chirp-scaffold-terminal] .cst-command,
+  [data-chirp-scaffold-terminal] .cst-path {
+    color: #e6dfcf;
+  }
+
+  [data-chirp-scaffold-terminal] .cst-brand,
+  [data-chirp-scaffold-terminal] .cst-ok {
+    color: var(--dark-ok, #a4b88a);
+  }
+
+  [data-chirp-scaffold-terminal] .cst-string {
+    color: var(--dark-string, #d9a05f);
+  }
+
+  [data-chirp-scaffold-terminal] .cst-muted {
+    color: #817967;
+  }
+
+  [data-chirp-scaffold-terminal] .cst-output {
+    display: grid;
+    gap: 5px;
+    margin-top: 17px;
+  }
+
+  [data-chirp-scaffold-terminal] .cst-task {
+    display: grid;
+    grid-template-rows: auto 0fr;
+    min-width: 0;
+    opacity: 0;
+    transform: translateY(4px);
+    transition:
+      grid-template-rows 240ms ease,
+      opacity 170ms ease,
+      transform 220ms ease;
+  }
+
+  [data-chirp-scaffold-terminal] .cst-task.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  [data-chirp-scaffold-terminal] .cst-task.is-active {
+    grid-template-rows: auto 1fr;
+  }
+
+  [data-chirp-scaffold-terminal] .cst-task-head {
+    display: grid;
+    grid-template-columns: 1.4em minmax(0, 1fr);
+    align-items: baseline;
+    min-height: 1.5em;
+  }
+
+  [data-chirp-scaffold-terminal] .cst-task-icon {
+    color: var(--dark-string, #d9a05f);
+  }
+
+  [data-chirp-scaffold-terminal] .cst-task.is-active .cst-task-icon {
+    animation: cst-pulse 900ms ease-in-out infinite alternate;
+  }
+
+  [data-chirp-scaffold-terminal] .cst-task.is-complete .cst-task-icon {
+    color: var(--dark-ok, #a4b88a);
+    animation: none;
+  }
+
+  [data-chirp-scaffold-terminal] .cst-task-label {
+    min-width: 0;
+    color: #b7ae99;
+    overflow-wrap: anywhere;
+  }
+
+  [data-chirp-scaffold-terminal] .cst-task.is-active .cst-task-label {
+    color: #e1d9c8;
+  }
+
+  [data-chirp-scaffold-terminal] .cst-task.is-complete .cst-task-label {
+    color: #aaa18e;
+  }
+
+  [data-chirp-scaffold-terminal] .cst-details-wrap {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  [data-chirp-scaffold-terminal] .cst-details {
+    display: grid;
+    gap: 1px;
+    padding: 3px 0 6px 1.4em;
+  }
+
+  [data-chirp-scaffold-terminal] .cst-detail {
+    min-height: 1.5em;
+    margin: 0 !important;
+    color: #817967;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    opacity: 0;
+    transform: translateY(3px);
+  }
+
+  [data-chirp-scaffold-terminal] .cst-detail.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 150ms ease, transform 180ms ease;
+  }
+
+  [data-chirp-scaffold-terminal] .cst-summary {
+    display: grid;
+    grid-template-columns: 1.4em minmax(0, 1fr);
+    align-items: baseline;
+    margin-top: 14px;
+    padding: 8px 10px;
+    border: 1px solid #654328;
+    border-radius: 6px;
+    background: #4d321f;
+    color: #e6d8c6;
+    opacity: 0;
+    transform: translateY(5px);
+  }
+
+  [data-chirp-scaffold-terminal] .cst-summary.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 200ms ease, transform 240ms ease;
+  }
+
+  [data-chirp-scaffold-terminal] .cst-summary-icon {
+    color: var(--dark-ok, #a4b88a);
+  }
+
+  [data-chirp-scaffold-terminal] .cst-summary-meta {
+    display: block;
+    margin-top: 2px;
+    color: #b9aa95;
+  }
+
+  [data-chirp-scaffold-terminal] .cst-cursor {
+    display: inline-block;
+    width: .58em;
+    height: 1.18em;
+    margin-left: 2px;
+    vertical-align: -.18em;
+    background: var(--accent, #dd4c22);
+    animation: cst-cursor 950ms steps(1) infinite;
+  }
+
+  [data-chirp-scaffold-terminal][data-state="running"] .cst-cursor,
+  [data-chirp-scaffold-terminal][data-state="complete"] .cst-cursor {
+    display: none;
+  }
+
+  @keyframes cst-cursor {
+    50% { opacity: 0; }
+  }
+
+  @keyframes cst-pulse {
+    from { opacity: .45; }
+    to { opacity: 1; }
+  }
+
+  @media (max-width: 620px) {
+    [data-chirp-scaffold-terminal] .cst-terminal {
+      border-radius: 11px !important;
+    }
+
+    [data-chirp-scaffold-terminal] .cst-body {
+      padding: 18px 17px 24px;
+      font-size: 10.5px !important;
+      line-height: 1.48 !important;
+    }
+
+    [data-chirp-scaffold-terminal] .cst-output {
+      gap: 4px;
+      margin-top: 15px;
+    }
+
+    [data-chirp-scaffold-terminal] .cst-summary,
+    [data-chirp-scaffold-terminal] .cst-replay {
+      margin-top: 11px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-chirp-scaffold-terminal] .cst-task,
+    [data-chirp-scaffold-terminal] .cst-detail,
+    [data-chirp-scaffold-terminal] .cst-summary {
+      transition: none !important;
+      transform: none !important;
+    }
+
+    [data-chirp-scaffold-terminal] .cst-task.is-active .cst-task-icon,
+    [data-chirp-scaffold-terminal] .cst-cursor {
+      animation: none !important;
+    }
+  }
+`;
+---
+
+<section
+  class:list={["chirp-scaffold-terminal", className]}
+  data-chirp-scaffold-terminal
+  data-state="idle"
+  style="visibility:hidden;display:block;width:100%;min-height:350px"
+  aria-label="Chirp scaffold command demonstration"
+>
+  <style is:inline media="not all" data-cst-style set:html={css}></style>
+
+  <div class="cst-terminal">
+    <div class="cst-bar">
+      <span aria-hidden="true" style="display:contents">
+        <i class="cst-dot"></i>
+        <i class="cst-dot"></i>
+        <i class="cst-dot"></i>
+        <span class="cst-title">chirp-site - zsh</span>
+      </span>
+      <button class="cst-replay" type="button" data-replay aria-label="Replay scaffold command sequence">Replay</button>
+    </div>
+
+    <div class="cst-body" aria-live="polite">
+      <div class="cst-command-line">
+        <span class="cst-prompt">~&nbsp;</span>
+        <span class="cst-command" data-command></span>
+        <span class="cst-cursor" aria-hidden="true"></span>
+      </div>
+
+      <div class="cst-output" data-output>
+        <div
+          class="cst-task"
+          data-task
+          data-running="reading src/content.config.ts"
+          data-complete={`read src/content.config.ts · ${collectionCount} collections`}
+        >
+          <div class="cst-task-head">
+            <span class="cst-task-icon" data-task-icon>·</span>
+            <span class="cst-task-label" data-task-label>reading src/content.config.ts</span>
+          </div>
+          <div class="cst-details-wrap">
+            <div class="cst-details">
+              <span class="cst-detail" data-detail><span class="cst-brand">chirp</span> found <span class="cst-string">{collectionCount} collections</span></span>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="cst-task"
+          data-task
+          data-running="checking existing page templates"
+          data-complete={`checked page templates · ${scaffoldedCount} missing`}
+        >
+          <div class="cst-task-head">
+            <span class="cst-task-icon" data-task-icon>·</span>
+            <span class="cst-task-label" data-task-label>checking existing page templates</span>
+          </div>
+          <div class="cst-details-wrap">
+            <div class="cst-details">
+              <span class="cst-detail" data-detail>posts     <span class="cst-ok">✓ already exists</span></span>
+              <span class="cst-detail" data-detail>plants    <span class="cst-string">→ scaffold</span></span>
+              <span class="cst-detail" data-detail>recipes   <span class="cst-string">→ scaffold</span></span>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="cst-task"
+          data-task
+          data-running={`validating ${scaffoldedCount} collection schemas`}
+          data-complete={`validated ${scaffoldedCount} schemas · ${totalFields} fields`}
+        >
+          <div class="cst-task-head">
+            <span class="cst-task-icon" data-task-icon>·</span>
+            <span class="cst-task-label" data-task-label>validating collection schemas</span>
+          </div>
+          <div class="cst-details-wrap">
+            <div class="cst-details">
+              <span class="cst-detail" data-detail>plants    {fieldCount} fields · text · lists · objects · images</span>
+              <span class="cst-detail" data-detail>recipes   11 fields · text · lists · objects · images</span>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="cst-task"
+          data-task
+          data-running="writing representative content"
+          data-complete={`wrote ${scaffoldedCount} sample entries · every field included`}
+        >
+          <div class="cst-task-head">
+            <span class="cst-task-icon" data-task-icon>·</span>
+            <span class="cst-task-label" data-task-label>writing representative content</span>
+          </div>
+          <div class="cst-details-wrap">
+            <div class="cst-details">
+              <span class="cst-detail" data-detail><span class="cst-ok">+</span> src/content/plants/sample.md</span>
+              <span class="cst-detail" data-detail><span class="cst-ok">+</span> src/content/recipes/sample.md</span>
+              <span class="cst-detail" data-detail><span class="cst-ok">✓</span> every schema field included</span>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="cst-task"
+          data-task
+          data-running="generating collection routes"
+          data-complete={`generated ${pageTemplateCount} page templates`}
+        >
+          <div class="cst-task-head">
+            <span class="cst-task-icon" data-task-icon>·</span>
+            <span class="cst-task-label" data-task-label>generating collection routes</span>
+          </div>
+          <div class="cst-details-wrap">
+            <div class="cst-details">
+              <span class="cst-detail" data-detail><span class="cst-ok">+</span> src/pages/plants/index.astro</span>
+              <span class="cst-detail" data-detail><span class="cst-ok">+</span> src/pages/plants/[slug].astro</span>
+              <span class="cst-detail" data-detail><span class="cst-ok">+</span> src/pages/recipes/index.astro</span>
+              <span class="cst-detail" data-detail><span class="cst-ok">+</span> src/pages/recipes/[slug].astro</span>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="cst-task"
+          data-task
+          data-running="wiring fields into the generated pages"
+          data-complete="wired every field into collection and single pages"
+        >
+          <div class="cst-task-head">
+            <span class="cst-task-icon" data-task-icon>·</span>
+            <span class="cst-task-label" data-task-label>wiring fields into the generated pages</span>
+          </div>
+          <div class="cst-details-wrap">
+            <div class="cst-details">
+              <span class="cst-detail" data-detail>strings · arrays · nested objects · images · body content</span>
+              <span class="cst-detail" data-detail><span class="cst-ok">✓ collection and single pages ready</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cst-summary" data-summary>
+        <span class="cst-summary-icon">✓</span>
+        <span>
+          {scaffoldedCount} collections scaffolded
+          <small class="cst-summary-meta">{scaffoldedCount} sample entries · {pageTemplateCount} page templates · ready to make it yours</small>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const initialiseScaffoldTerminals = () => {
+      const roots = document.querySelectorAll(
+        "[data-chirp-scaffold-terminal]:not([data-cst-initialised])",
+      );
+
+      roots.forEach((root) => {
+        if (!(root instanceof HTMLElement)) return;
+        root.dataset.cstInitialised = "true";
+
+        const style = root.querySelector("[data-cst-style]");
+        const command = root.querySelector("[data-command]");
+        const tasks = Array.from(root.querySelectorAll("[data-task]"));
+        const summary = root.querySelector("[data-summary]");
+        const replay = root.querySelector("[data-replay]");
+
+        if (!(command instanceof HTMLElement)) return;
+
+        let activated = false;
+        let started = false;
+        let running = false;
+        let sufficientlyVisible = false;
+        const visibilityWaiters = new Set();
+        const reduceMotion = window.matchMedia(
+          "(prefers-reduced-motion: reduce)",
+        ).matches;
+
+        const activateStyles = () => {
+          if (activated) return;
+          activated = true;
+          if (style instanceof HTMLStyleElement) style.media = "all";
+          root.style.visibility = "visible";
+        };
+
+        const releaseVisibilityWaiters = () => {
+          if (!sufficientlyVisible || document.hidden) return;
+          visibilityWaiters.forEach((resolve) => resolve());
+          visibilityWaiters.clear();
+        };
+
+        const waitUntilVisible = () => {
+          if (sufficientlyVisible && !document.hidden) return Promise.resolve();
+          return new Promise((resolve) => visibilityWaiters.add(resolve));
+        };
+
+        const visibleSleep = async (duration) => {
+          if (reduceMotion || duration <= 0) return;
+
+          let remaining = duration;
+          while (remaining > 0) {
+            await waitUntilVisible();
+            const slice = Math.min(remaining, 50);
+            const startedAt = performance.now();
+            await new Promise((resolve) => window.setTimeout(resolve, slice));
+            if (sufficientlyVisible && !document.hidden) {
+              remaining -= performance.now() - startedAt;
+            }
+          }
+        };
+
+        const runTask = async (task) => {
+          if (!(task instanceof HTMLElement)) return;
+
+          await waitUntilVisible();
+          task.classList.add("is-visible", "is-active");
+
+          const icon = task.querySelector("[data-task-icon]");
+          const label = task.querySelector("[data-task-label]");
+          const details = Array.from(task.querySelectorAll("[data-detail]"));
+
+          if (icon instanceof HTMLElement) icon.textContent = "◌";
+          if (label instanceof HTMLElement) {
+            label.textContent = task.dataset.running || label.textContent;
+          }
+
+          await visibleSleep(260);
+
+          for (const detail of details) {
+            if (detail instanceof HTMLElement) detail.classList.add("is-visible");
+            await visibleSleep(170);
+          }
+
+          await visibleSleep(details.length > 2 ? 360 : 480);
+
+          task.classList.remove("is-active");
+          task.classList.add("is-complete");
+          if (icon instanceof HTMLElement) icon.textContent = "✓";
+          if (label instanceof HTMLElement) {
+            label.textContent = task.dataset.complete || label.textContent;
+          }
+
+          await visibleSleep(230);
+        };
+
+        const reset = () => {
+          root.dataset.state = "idle";
+          command.textContent = "";
+
+          tasks.forEach((task) => {
+            if (!(task instanceof HTMLElement)) return;
+
+            task.classList.remove("is-visible", "is-active", "is-complete");
+
+            const icon = task.querySelector("[data-task-icon]");
+            const label = task.querySelector("[data-task-label]");
+            const details = task.querySelectorAll("[data-detail]");
+
+            if (icon instanceof HTMLElement) icon.textContent = "·";
+            if (label instanceof HTMLElement) {
+              label.textContent = task.dataset.running || label.textContent;
+            }
+            details.forEach((detail) => detail.classList.remove("is-visible"));
+          });
+
+          if (summary instanceof HTMLElement) summary.classList.remove("is-visible");
+        };
+
+        const run = async () => {
+          if (running) return;
+          running = true;
+          reset();
+          root.dataset.state = "typing";
+          const commandText = "pnpm chirp scaffold";
+
+          await visibleSleep(220);
+
+          if (reduceMotion) {
+            command.textContent = commandText;
+          } else {
+            for (const character of commandText) {
+              await waitUntilVisible();
+              command.textContent += character;
+              await visibleSleep(character === " " ? 48 : 24 + Math.random() * 22);
+            }
+          }
+
+          root.dataset.state = "running";
+          await visibleSleep(300);
+
+          for (const task of tasks) {
+            await runTask(task);
+          }
+
+          if (summary instanceof HTMLElement) summary.classList.add("is-visible");
+          root.dataset.state = "complete";
+          running = false;
+        };
+
+        if (replay instanceof HTMLButtonElement) {
+          replay.addEventListener("click", () => {
+            if (running) return;
+            void run();
+          });
+        }
+
+        const observer = new IntersectionObserver(
+          (entries) => {
+            const entry = entries[0];
+            if (!entry) return;
+
+            if (entry.isIntersecting) activateStyles();
+
+            sufficientlyVisible =
+              entry.isIntersecting && entry.intersectionRatio >= 0.32;
+            releaseVisibilityWaiters();
+
+            if (sufficientlyVisible && !started) {
+              started = true;
+              void run();
+            }
+          },
+          {
+            threshold: [0, 0.08, 0.2, 0.32, 0.5, 0.75],
+            rootMargin: "0px 0px -3% 0px",
+          },
+        );
+
+        observer.observe(root);
+        document.addEventListener("visibilitychange", releaseVisibilityWaiters);
+      });
+    };
+
+    initialiseScaffoldTerminals();
+    document.addEventListener("astro:page-load", initialiseScaffoldTerminals);
+  </script>
+</section>

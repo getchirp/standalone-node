@@ -1,0 +1,42 @@
+---
+import ChirpBird from "../components/ChirpBird.astro";
+const { current = '' } = Astro.props;
+const isDocs = current === 'docs';
+const navLinks = [
+  { label: 'Features', href: '/' },
+  { label: 'Releases', href: '/releases' },
+  { label: 'Roadmap', href: '/roadmap' },
+  { label: 'Blog', href: '/blog' },
+  { label: 'Docs', href: '/docs' },
+];
+---
+
+<header class="site-header">
+  <div class="shell nav-shell">
+    <div class="nav-group nav-group-left">
+      <ChirpBird />
+      <nav class="nav-links" aria-label="Primary">
+        {navLinks.map((link) => (
+          <a href={link.href}>{link.label}</a>
+        ))}
+      </nav>
+    </div>
+
+    <div class="nav-group nav-actions">
+      <a class="nav-docs" href="/docs" aria-current={isDocs ? 'page' : undefined}>Docs</a>
+      <a class="nav-kbd" href="/#editor" aria-label="Open command palette" data-command-palette-trigger>⌘K</a>
+      <a class="button button-primary nav-cta" href="/#get">Get started</a>
+    </div>
+
+    <details class="mobile-nav">
+      <summary aria-label="Open menu">Menu</summary>
+      <div class="mobile-nav-panel">
+        {navLinks.map((link) => <a href={link.href}>{link.label}</a>)}
+        <div class="mobile-nav-buttons">
+          <a class="nav-docs" href="/docs">Docs</a>
+          <a class="button button-primary" href="/#get">Get started</a>
+        </div>
+      </div>
+    </details>
+  </div>
+</header>

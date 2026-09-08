@@ -1,0 +1,59 @@
+---
+import Base from '../../layouts/Base.astro';
+import BlogTimeline from '../../components/BlogTimeline.astro';
+import SubscribeBlock from '../../components/SubscribeBlock.astro';
+import '../../styles/blog.css';
+import { makeIds, assembleGraph, buildPiece } from '@jdevalk/seo-graph-core';
+import { buildWebSite, buildWebPage } from '@jdevalk/seo-graph-core';
+import { getCollection, getEntry } from 'astro:content';
+
+const siteUrl = 'https://chirp.md';
+const pageUrl = siteUrl + '/blog';
+const ids = makeIds({ siteUrl });
+
+const pageGraph = assembleGraph([
+  buildWebSite({ url: siteUrl, name: 'Chirp', description: 'Modern publishing platform for teams.', inLanguage: 'en' }, ids),
+  buildPiece({ '@type': 'Organization', url: siteUrl, name: 'Chirp', description: 'Modern publishing platform for teams.' }),
+  buildWebPage({ url: pageUrl, name: 'Notes on publishing - Chirp Blog', description: 'Engineering decisions, product thinking and release notes.', inLanguage: 'en' }, ids),
+]);
+
+const allCategories = await getCollection('postCategories');
+const rawPosts = await getCollection('post', ({ data }) => !data.draft);
+
+const resolvedPosts = await Promise.all(
+  rawPosts.map(async (post) => {
+    const categoryEntry = post.data.category ? await getEntry(post.data.category) : null;
+    return { ...post, resolvedCategory: categoryEntry };
+  })
+);
+
+resolvedPosts.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+---
+
+
+<Base title="Notes on publishing - the Chirp blog" description="Engineering decisions, product thinking and release notes - written the way we build: no filler." ogImage="/og/blog.jpg" graph={pageGraph} current="blog">
+  <!-- Hero -->
+  <header class="blog-hero" aria-labelledby="blog-hero-title">
+    <div class="blog-hero-inner">
+      <div class="eyebrow">Blog</div>
+      <h1 id="blog-hero-title">Notes on publishing.</h1>
+      <p class="blog-hero-subtitle">Engineering decisions, product thinking and release notes - written the way we build: no filler.</p>
+    </div>
+    <nav class="blog-filters" aria-label="Filter posts by category">
+      <a class="blog-filter-pill active" href="/blog" aria-current="true">All</a>
+      {allCategories.map((cat) => (
+        <a class="blog-filter-pill" href={`/blog/${cat.id}`}>{cat.data.name}</a>
+      ))}
+    </nav>
+  </header>
+
+  <!-- Timeline -->
+  <section class="blog-timeline-section" aria-label="Posts by month">
+    <div class="blog-timeline-shell">
+      <BlogTimeline posts={resolvedPosts} />
+    </div>
+  </section>
+
+  <!-- Subscribe -->
+  <SubscribeBlock />
+</Base>
