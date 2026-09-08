@@ -29,6 +29,7 @@ export default defineConfig({
   integrations: [
     mdx(),
     chirp({
+      mountPath: '/',
       sidebar: false,
       tables: false,
       adapter: {
