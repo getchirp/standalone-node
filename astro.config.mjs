@@ -25,6 +25,13 @@ export default defineConfig({
       },
     }),
   },
+  security: {
+    checkOrigin: true,
+    allowedDomains: [{
+      hostname: 'orange-space-succotash-vpgqjpr754xqcxj5g-4321.app.github.dev',
+      protocol: 'https',
+    }],
+  },
   integrations: [
     mdx(),
     chirp({
